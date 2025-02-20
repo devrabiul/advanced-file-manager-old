@@ -1,0 +1,28 @@
+{
+    "name": "devrabiul/advanced-file-manager",
+    "description": "Practice",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Devrabiul\\AdvancedFileManager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Muhammad Rabiul",
+            "email": "devrabiul@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel" :{
+            "providers" : [
+                "Devrabiul\\AdvancedFileManager\\AdvancedFileManagerServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "league/flysystem-aws-s3-v3": "^3.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
