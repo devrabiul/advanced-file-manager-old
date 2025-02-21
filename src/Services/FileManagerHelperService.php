@@ -15,7 +15,7 @@ class FileManagerHelperService
     public static function getStorageDriver()
     {
         if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.disks'))) {
-            return request('driver');
+            return request('driver', 'public');
         }
         return config('advanced-file-manager.default') ?? 'public';
     }

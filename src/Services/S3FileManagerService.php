@@ -15,9 +15,9 @@ class S3FileManagerService
     public static function getStorageDriver()
     {
         if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.storage_drivers'))) {
-            return request('driver');
+            return request('driver', 'public');
         }
-        return config('advanced-file-manager.default_driver');
+        return config('advanced-file-manager.default') ?? 'public';
     }
 
     public static function checkS3DriverCredential()
