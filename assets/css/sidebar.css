@@ -123,6 +123,7 @@
     text-decoration: none;
     transition: all 0.2s ease;
     font-size: .85rem;
+    cursor: pointer;
 }
 
 .quick-access-item:hover {

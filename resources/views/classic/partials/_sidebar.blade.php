@@ -43,48 +43,55 @@
                     <i class="bi bi-activity"></i>
                 </span>
             </div>
-            <a href="#" class="quick-access-item" data-type="recent">
+            <div class="quick-access-item" onclick="openFilesByAjax('recent')">
                 <div class="quick-access-content">
                     <i class="bi bi-clock-history"></i>
                     <span>Recent Files</span>
                 </div>
                 <span class="type-size">{{ $quickAccess['recent']['totalFiles'] }} files</span>
-            </a>
-            <!-- <a href="#" class="quick-access-item" data-type="favorites">
-                <div class="quick-access-content">
-                    <i class="bi bi-star"></i>
-                    <span>Favorites</span>
-                </div>
-                <span class="type-size">{{ $quickAccess['favorites']['totalFiles'] }} files</span>
-            </a> -->
-            <a href="#" class="quick-access-item" data-type="images">
+            </div>  
+            <div class="quick-access-item" onclick="openFilesByAjax('images')">
                 <div class="quick-access-content">
                     <i class="bi bi-image"></i>
                     <span>Images</span>
                 </div>
                 <span class="type-size">{{ $quickAccess['images']['size'] }}</span>
-            </a>
-            <a href="#" class="quick-access-item" data-type="documents">
+            </div>
+            <div class="quick-access-item" onclick="openFilesByAjax('documents')">
                 <div class="quick-access-content">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Documents</span>
                 </div>
                 <span class="type-size">{{ $quickAccess['documents']['size'] }}</span>
-            </a>
-            <a href="#" class="quick-access-item" data-type="videos">
+            </div>
+            <div class="quick-access-item" onclick="openFilesByAjax('videos')">
                 <div class="quick-access-content">
                     <i class="bi bi-camera-video"></i>
                     <span>Videos</span>
                 </div>
                 <span class="type-size">{{ $quickAccess['videos']['size'] }}</span>
-            </a>
-            <a href="#" class="quick-access-item" data-type="music">
+            </div>
+            <div class="quick-access-item" onclick="openFilesByAjax('music')">
                 <div class="quick-access-content">
                     <i class="bi bi-music-note-beamed"></i>
                     <span>Music</span>
                 </div>
                 <span class="type-size">{{ $quickAccess['music']['size'] }}</span>
-            </a>
+            </div>
+            <div class="quick-access-item" onclick="openFilesByAjax('archives')">
+                <div class="quick-access-content">
+                    <i class="bi bi-file-earmark-zip"></i>
+                    <span>Archives</span>
+                </div>
+                <span class="type-size">{{ $quickAccess['archives']['size'] ?? '0 KB' }}</span>
+            </div>
+            <div class="quick-access-item" onclick="openFilesByAjax('others')">
+                <div class="quick-access-content">
+                    <i class="bi bi-files"></i>
+                    <span>Others</span>
+                </div>
+                <span class="type-size">{{ $quickAccess['others']['size'] ?? '0 KB' }}</span>
+            </div>
         </div>
     </div>
 

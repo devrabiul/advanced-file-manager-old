@@ -3,12 +3,13 @@
 namespace Devrabiul\AdvancedFileManager\Services;
 
 use Carbon\Carbon;
+use Devrabiul\AdvancedFileManager\Services\AdvancedFileManagerService;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
-use Devrabiul\AdvancedFileManager\Services\AdvancedFileManagerService;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 
 class FileManagerHelperService
@@ -64,20 +65,26 @@ class FileManagerHelperService
     {
         $requestData = !empty($request) ? $request : request()->all();
         $targetFolder = urldecode($requestData['targetFolder'] ?? '');
-
-        $cacheKeyFiles = "files_in_{$targetFolder}";
-        $cacheKeyFolders = "folders_in_{$targetFolder}";
-        $cacheKeyOverview = "overview_in_{$targetFolder}";
+        $storageDriver = S3FileManagerService::getStorageDriver();
+        
+        $cacheKeyAllFiles = "files_in_{$storageDriver}";
+        $cacheKeyFiles = "files_in_{$targetFolder}_{$storageDriver}";
+        $cacheKeyFolders = "folders_in_{$targetFolder}_{$storageDriver}";
+        $cacheKeyOverview = "overview_in_{$targetFolder}_{$storageDriver}";
 
         FileManagerHelperService::cacheKeys($cacheKeyFiles);
         FileManagerHelperService::cacheKeys($cacheKeyFolders);
         FileManagerHelperService::cacheKeys($cacheKeyOverview);
 
+        $AllFilesInStorage = Cache::remember($cacheKeyAllFiles, 3600, function () {
+            return Storage::disk(S3FileManagerService::getStorageDriver())->allFiles();
+        });
+
         $AllFilesInCurrentFolder = Cache::remember($cacheKeyFiles, 3600, function () use ($targetFolder, $requestData) {
             return AdvancedFileManagerService::getAllFiles(targetFolder: $targetFolder, request: $requestData);
         });
 
-        $AllFilesInCurrentFolder['files'] = AdvancedFileManagerService::getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData);
+        $AllFilesInCurrentFolderFiles = AdvancedFileManagerService::getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData);
 
         $folderArray = Cache::remember($cacheKeyFolders, 3600, function () use ($targetFolder) {
             return AdvancedFileManagerService::getAllFolders($targetFolder);
@@ -93,6 +100,7 @@ class FileManagerHelperService
         $dataArray = [
             'folderArray' => $folderArray,
             'AllFilesInCurrentFolder' => $AllFilesInCurrentFolder,
+            'AllFilesInCurrentFolderFiles' => $AllFilesInCurrentFolderFiles,
             'lastFolder' => $lastFolder,
             'AllFilesOverview' => $AllFilesOverview
         ];
@@ -102,6 +110,100 @@ class FileManagerHelperService
         return [
             'html' => view("advanced-file-manager::$theme.partials._content", $dataArray)->render(),
             'html_files' => view("advanced-file-manager::$theme.partials._files-list-content", $dataArray)->render(),
+        ];
+    }
+
+
+    public static function renderAdvancedFileManagerFilesView(array|object $request = [], string $type = null): array
+    {
+        $requestData = !empty($request) ? $request : request()->all();
+        $storageDriver = S3FileManagerService::getStorageDriver();
+        $fileType = $requestData['fileType'] ?? '';
+        
+        $cacheKeyAllFiles = "files_in_{$storageDriver}_{$fileType}";
+        FileManagerHelperService::cacheKeys($cacheKeyAllFiles);
+
+        $filesByTypeInStorage = Cache::remember($cacheKeyAllFiles, 3600, function () use ($fileType) {
+            $allFiles = Storage::disk(S3FileManagerService::getStorageDriver())->allFiles();
+            
+            // Filter files by type if specified
+            if (!empty($fileType)) {
+                $allFiles = array_filter($allFiles, function($file) use ($fileType) {
+                    $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                    
+                    switch($fileType) {
+                        case 'images':
+                            return in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico', 'tiff']);
+                        case 'documents':
+                            return in_array($extension, ['doc', 'docx', 'txt', 'rtf', 'odt', 'pages', 'tex']);
+                        case 'videos':
+                            return in_array($extension, ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', '3gp', 'm4v']);
+                        case 'music':
+                            return in_array($extension, ['mp3', 'wav', 'ogg', 'wma', 'm4a', 'aac', 'flac', 'alac']);
+                        case 'archives':
+                            return in_array($extension, ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'iso']);
+                        case 'pdfs':
+                            return in_array($extension, ['pdf']);
+                        case 'spreadsheets':
+                            return in_array($extension, ['xls', 'xlsx', 'csv', 'ods', 'numbers']);
+                        case 'presentations':
+                            return in_array($extension, ['ppt', 'pptx', 'key', 'odp']);
+                        case 'fonts':
+                            return in_array($extension, ['ttf', 'otf', 'woff', 'woff2', 'eot']);
+                        case 'recent':
+                            // Get files modified in the last 7 days
+                            $lastModified = Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file);
+                            return Carbon::createFromTimestamp($lastModified)->isAfter(now()->subDays(7));
+                        case 'others':
+                            // Get files that don't match any of the above categories
+                            $commonExtensions = [
+                                'jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico', 'tiff', // images
+                                'doc', 'docx', 'txt', 'rtf', 'odt', 'pages', 'tex', // documents
+                                'mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', '3gp', 'm4v', // videos
+                                'mp3', 'wav', 'ogg', 'wma', 'm4a', 'aac', 'flac', 'alac', // music
+                                'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'iso', // archives
+                                'pdf', // pdfs
+                                'xls', 'xlsx', 'csv', 'ods', 'numbers', // spreadsheets
+                                'ppt', 'pptx', 'key', 'odp', // presentations
+                                'ttf', 'otf', 'woff', 'woff2', 'eot' // fonts
+                            ];
+                            return !in_array($extension, $commonExtensions);
+                        default:
+                            return $extension === strtolower($fileType);
+                    }
+                });
+            }
+            
+            return array_values($allFiles);
+        });
+
+        $AllFilesInCurrentFolderFiles = AdvancedFileManagerService::getFilesWithInfo(filePaths: $filesByTypeInStorage);
+
+        $AllFilesInCurrentFolderFiles = collect($AllFilesInCurrentFolderFiles);
+        if (request()->has('search') && !empty(request('search'))) {
+            $AllFilesInCurrentFolderFiles = $AllFilesInCurrentFolderFiles->filter(function ($file) use ($requestData) {
+                return str_contains(strtolower($file['name']), strtolower($requestData['search']));
+            });
+        }
+
+        $perPage = 20;
+        $page = request()->get('page', 1);
+        $items = $AllFilesInCurrentFolderFiles->slice(($page - 1) * $perPage, $perPage)->values();
+
+        $AllFilesInCurrentFolderFiles = new LengthAwarePaginator($items, count($AllFilesInCurrentFolderFiles), $perPage, $page, [
+            'path' => request()->url(),
+            'query' => request()->query(),
+        ]);
+
+        $dataArray = [
+            'AllFilesInCurrentFolderFiles' => $AllFilesInCurrentFolderFiles,
+        ];
+
+        // Check if the theme exists or fallback to a default if needed
+        $theme = self::getFileManagerTheme() ?: 'default';
+        return [
+            'html' => view("advanced-file-manager::$theme.partials._content", $dataArray)->render(),
+            'html_files' => view("advanced-file-manager::$theme.partials._files-list", $dataArray)->render(),
         ];
     }
     

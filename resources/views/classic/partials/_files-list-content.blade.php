@@ -3,9 +3,9 @@
 ?>
 
 
-@if(count($AllFilesInCurrentFolder['files']) > 0)
+@if(count($AllFilesInCurrentFolderFiles) > 0)
     <div class="file-manager-files-section {{ session('file_list_container_view_mode') ?? 'list-view' }}" id="filesContainer">
-        @foreach ($AllFilesInCurrentFolder['files'] as $key => $File)
+        @foreach ($AllFilesInCurrentFolderFiles as $key => $File)
             <div class="file-manager-files-item" data-filename="{{ strtolower($File['short_name']) }}">
                 <div class="files-icon"
                      onclick="previewFile('{{ $File['type'] }}', '{{ $File['path'] }}', '{{ $File['short_name'] }}')">
@@ -79,5 +79,5 @@
 
 <!-- Pagination Links -->
 <div class="pagination-wrapper">
-    {{ $AllFilesInCurrentFolder['files']->links() }}
+    {{ $AllFilesInCurrentFolderFiles->links() }}
 </div>

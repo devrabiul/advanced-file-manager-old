@@ -14,7 +14,12 @@ class FileManagerController extends Controller
 {
     public function getFolderContent(Request $request)
     {
-        $getView = FileManagerHelperService::renderAdvancedFileManagerView();
+        if (request()->has('fileType') && request('fileType') != '') {
+            $getView = FileManagerHelperService::renderAdvancedFileManagerFilesView(type: request('fileType'));
+        } else {
+            $getView = FileManagerHelperService::renderAdvancedFileManagerView();
+        }
+
         return response()->json([
             'html' => $getView['html'],
             'html_files' => $getView['html_files'],

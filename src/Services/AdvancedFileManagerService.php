@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
-    use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Devrabiul\AdvancedFileManager\Services\FileManagerHelperService;
 use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 
@@ -18,18 +18,18 @@ class AdvancedFileManagerService
             return AdvancedFileManagerService::getAllFiles(targetFolder: $targetFolder, request: $requestData);
         });
 
-        $AllFilesInCurrentFolder['files'] = collect($AllFilesInCurrentFolder['files']);
+        $AllFilesInCurrentFolderFiles = collect($AllFilesInCurrentFolder['files']);
         if (request()->has('search') && !empty(request('search'))) {
-            $AllFilesInCurrentFolder['files'] = $AllFilesInCurrentFolder['files']->filter(function ($file) use ($requestData) {
+            $AllFilesInCurrentFolderFiles = $AllFilesInCurrentFolderFiles->filter(function ($file) use ($requestData) {
                 return str_contains(strtolower($file['name']), strtolower($requestData['search']));
             });
         }
 
         $perPage = 20;
         $page = request()->get('page', 1);
-        $items = $AllFilesInCurrentFolder['files']->slice(($page - 1) * $perPage, $perPage)->values();
+        $items = $AllFilesInCurrentFolderFiles->slice(($page - 1) * $perPage, $perPage)->values();
     
-        return new LengthAwarePaginator($items, count($AllFilesInCurrentFolder['files']), $perPage, $page, [
+        return new LengthAwarePaginator($items, count($AllFilesInCurrentFolderFiles), $perPage, $page, [
             'path' => request()->url(),
             'query' => request()->query(),
         ]);
@@ -48,29 +48,7 @@ class AdvancedFileManagerService
 
         $GenData['path'] = array_merge($AllFilesInCurrentFolder, $AllDirectories);
 
-        $FilesWithInfo = [];
-
-        foreach ($AllFilesInCurrentFolder as $file) {
-            $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
-            $name = explode('/', $file);
-
-            if (!empty($targetFolder)) {
-                if ((!empty($request['filter']) && $type == $request['filter']) || (empty($request['filter']) || ($request['filter'] == 'all'))) {
-                    $FilesWithInfo[] = [
-                        'name' => end($name),
-                        'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
-                        'path' => $file,
-                        'encodePath' => Crypt::encryptString($file),
-                        'type' => $type,
-                        'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-                        'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
-                        'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
-                        'extension' => pathinfo($file, PATHINFO_EXTENSION),
-                        'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
-                    ];
-                }
-            }
-        }
+        $FilesWithInfo = AdvancedFileManagerService::getFilesWithInfo(filePaths: $AllFilesInCurrentFolder);
 
         $DirectoriesWithInfo = [];
         foreach ($AllDirectories as $directory) {
@@ -109,6 +87,28 @@ class AdvancedFileManagerService
         return $GenData;
     }
 
+
+    public static function getFilesWithInfo($filePaths = []): array
+    {
+        $FilesWithInfo = [];
+        foreach ($filePaths as $file) {
+            $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
+            $name = explode('/', $file);
+            $FilesWithInfo[] = [
+                'name' => end($name),
+                'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
+                'path' => $file,
+                'encodePath' => Crypt::encryptString($file),
+                'type' => $type,
+                'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
+                'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+                'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
+                'extension' => pathinfo($file, PATHINFO_EXTENSION),
+                'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
+            ];
+        }
+        return $FilesWithInfo;
+    }
 
     public static function getAllFolders($targetFolder = null): array
     {
@@ -324,8 +324,47 @@ class AdvancedFileManagerService
         foreach ($AllFiles as $file) {
             $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
             $name = explode('/', $file);
+            $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-            if ((!empty($request['filter']) && $type == $request['filter']) || (empty($request['filter']) || ($request['filter'] == 'all'))) {
+            // Check if file matches the requested filter
+            $includeFile = false;
+            if (empty($request['filter']) || $request['filter'] == 'all') {
+                $includeFile = true;
+            } else {
+                switch($request['filter']) {
+                    case 'images':
+                        $includeFile = $type === 'image';
+                        break;
+                    case 'videos':
+                        $includeFile = $type === 'video';
+                        break;
+                    case 'music':
+                        $includeFile = $type === 'audio';
+                        break;
+                    case 'documents':
+                        $includeFile = in_array($extension, ['doc', 'docx', 'txt', 'rtf', 'odt', 'pages', 'tex']);
+                        break;
+                    case 'archives':
+                        $includeFile = in_array($extension, ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'iso']);
+                        break;
+                    case 'pdfs':
+                        $includeFile = $extension === 'pdf';
+                        break;
+                    case 'spreadsheets':
+                        $includeFile = in_array($extension, ['xls', 'xlsx', 'csv', 'ods', 'numbers']);
+                        break;
+                    case 'presentations':
+                        $includeFile = in_array($extension, ['ppt', 'pptx', 'key', 'odp']);
+                        break;
+                    case 'fonts':
+                        $includeFile = in_array($extension, ['ttf', 'otf', 'woff', 'woff2', 'eot']);
+                        break;
+                    default:
+                        $includeFile = $type === $request['filter'];
+                }
+            }
+
+            if ($includeFile) {
                 $FilesWithInfo[] = [
                     'name' => end($name),
                     'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
@@ -335,7 +374,7 @@ class AdvancedFileManagerService
                     'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
                     'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
                     'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
-                    'extension' => pathinfo($file, PATHINFO_EXTENSION),
+                    'extension' => $extension,
                     'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
                 ];
             }
@@ -358,10 +397,15 @@ class AdvancedFileManagerService
         return [
             'recent' => self::getRecentFiles(),
             'favorites' => self::getFavoriteFiles(),
-            'images' => self::getQuickAccessFilesByType('image', '/'),
-            'videos' => self::getQuickAccessFilesByType('video', '/'),
-            'music' => self::getQuickAccessFilesByType('audio', '/'),
-            'documents' => self::getQuickAccessFilesByType('application', '/')
+            'images' => self::getQuickAccessFilesByType('images', '/'),
+            'videos' => self::getQuickAccessFilesByType('videos', '/'),
+            'music' => self::getQuickAccessFilesByType('music', '/'),
+            'documents' => self::getQuickAccessFilesByType('documents', '/'),
+            'archives' => self::getQuickAccessFilesByType('archives', '/'),
+            'pdfs' => self::getQuickAccessFilesByType('pdfs', '/'),
+            'spreadsheets' => self::getQuickAccessFilesByType('spreadsheets', '/'),
+            'presentations' => self::getQuickAccessFilesByType('presentations', '/'),
+            'fonts' => self::getQuickAccessFilesByType('fonts', '/')
         ];
     }
 }

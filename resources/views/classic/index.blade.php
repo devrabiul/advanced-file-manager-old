@@ -5,6 +5,7 @@
     use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
     use Illuminate\Support\Facades\Cache;
     use Illuminate\Pagination\LengthAwarePaginator;
+    use Illuminate\Support\Facades\Storage;
 
     if (request('driver') == 's3') {
         $s3DriverCheck = S3FileManagerService::checkS3DriverCredential();
@@ -18,19 +19,25 @@
     $requestData = !empty($request) ? $request : request()->all();
     $targetFolder = urldecode($requestData['targetFolder'] ?? '');
 
+    $cacheKeyAllFiles = "files_in_{$storageDriver}";
     $cacheKeyFiles = "files_in_{$targetFolder}_{$storageDriver}";
     $cacheKeyFolders = "folders_in_{$targetFolder}_{$storageDriver}";
     $cacheKeyOverview = "overview_in_{$targetFolder}_{$storageDriver}";
 
+    FileManagerHelperService::cacheKeys($cacheKeyAllFiles);
     FileManagerHelperService::cacheKeys($cacheKeyFiles);
     FileManagerHelperService::cacheKeys($cacheKeyFolders);
     FileManagerHelperService::cacheKeys($cacheKeyOverview);
+
+    $AllFilesInStorage = Cache::remember($cacheKeyAllFiles, 3600, function () {
+        return Storage::disk(S3FileManagerService::getStorageDriver())->allFiles();
+    });
 
     $AllFilesInCurrentFolder = Cache::remember($cacheKeyFiles, 3600, function () use ($targetFolder, $requestData) {
         return AdvancedFileManagerService::getAllFiles(targetFolder: $targetFolder, request: $requestData);
     });
 
-    $AllFilesInCurrentFolder['files'] = AdvancedFileManagerService::getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData);
+    $AllFilesInCurrentFolderFiles = AdvancedFileManagerService::getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData);
 
     $folderArray = Cache::remember($cacheKeyFolders, 3600, function () use ($targetFolder) {
         return AdvancedFileManagerService::getAllFolders($targetFolder);

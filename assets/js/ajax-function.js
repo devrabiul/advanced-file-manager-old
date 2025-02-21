@@ -227,6 +227,56 @@ document.querySelector('.file-manager-root-container').addEventListener('change'
     }
 });
 
+function openFilesByAjax(fileType, driver = 'public') {
+    const url = new URL(window.location.href);
+    const route = document.querySelector('.file-manager-files-container').getAttribute('data-route');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const formData = new FormData();
+    formData.append('_token', csrfToken);
+    formData.append('fileType', fileType);
+    formData.append('driver', driver);
+
+    url.searchParams.delete('search');
+    url.searchParams.delete('page');
+
+    const contentContainer = document.querySelector('.advanced-file-manager-content');
+
+    // Show loader before sending the request
+    loaderContainerRender('show');
+
+    fetch(route, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json()) // Assuming the response is JSON
+    .then(response => {
+        // Hide and clear the content, then replace it with new HTML
+        contentContainer.style.display = 'none';
+        contentContainer.innerHTML = response.html;
+        contentContainer.style.display = 'block';
+
+        // Update the URL query parameters
+        if (fileType) {
+            url.searchParams.set('fileType', fileType);
+        } else {
+            url.searchParams.delete('fileType');
+        }
+        if (driver) {
+            url.searchParams.set('driver', driver);
+        } else {
+            url.searchParams.delete('driver');
+        }
+        window.history.pushState({}, '', url);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        loaderContainerRender('hide');
+    });
+}
+
 
 function loaderContainerRender(action) {
     const loaderContainer = document.querySelector(".advanced-file-manager-loader-container");
@@ -241,6 +291,6 @@ function loaderContainerRender(action) {
         setTimeout(() => {
             fileManagerFiles.style.overflowY = 'auto';
             loaderContainer.classList.add('loader-container-hide');
-        }, 500);
+        }, 300);
     }
 }
