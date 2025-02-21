@@ -9,24 +9,26 @@
 
     <!-- Quick Access -->
     <h5 class="quick-access-section-title">Quick Access</h5>
+
+    <?php
+        $storageDrivers = config('advanced-file-manager.disks');
+        $enabledDrivers = [];
+        foreach (config('advanced-file-manager.disks') as $storageDiskKey => $storageDisk) {
+            if (in_array($storageDiskKey, config('advanced-file-manager.enabled_drivers'))) {
+                $enabledDrivers[$storageDiskKey] = $storageDisk;
+            }
+        }
+    ?>
+    <div class="quick-access-dropdown">
+        <select class="custom-select">
+            @foreach($enabledDrivers as $key => $driver)
+                <option value="{{ $driver['driver'] }}">{{ Str::upper($key) }}</option>
+            @endforeach
+        </select>
+        <i class="bi bi-chevron-down"></i>
+    </div>
+
     <div class="quick-access-section">
-
-        <?php
-            $storageDrivers = config('advanced-file-manager.storage_drivers');
-            $enabledDrivers = array_filter($storageDrivers, function($key) {
-                return in_array($key, config('advanced-file-manager.enabled_drivers'));
-            }, ARRAY_FILTER_USE_KEY);
-        ?>
-        <div class="quick-access-dropdown">
-            <select class="custom-select">
-                <option value="" selected disabled>Quick Access</option>
-                @foreach($enabledDrivers as $key => $driver)
-                    <option value="{{ $driver['path'] }}">{{ $driver['name'] }}</option>
-                @endforeach
-            </select>
-            <i class="bi bi-chevron-down"></i>
-        </div>
-
         @if (request('driver') == 's3')
             @dd(S3FileManagerService::checkS3DriverCredential())
         @endif

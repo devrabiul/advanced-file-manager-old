@@ -13,10 +13,10 @@ class AdvancedFileManagerService
 {
     public static function getStorageDriver()
     {
-        if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.storage_drivers'))) {
+        if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.disks'))) {
             return request('driver');
         }
-        return config('advanced-file-manager.default_driver');
+        return config('advanced-file-manager.default') ?? 'public';
     }
 
     public static function getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData)

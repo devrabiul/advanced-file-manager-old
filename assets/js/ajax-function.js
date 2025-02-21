@@ -1,17 +1,19 @@
 document.getElementById('actionSmartFileSync').addEventListener('click', function(event) {
     const route = this.getAttribute('data-route');
-    
-    fetch(route)
-        .then(response => response.json()) // Assuming the response is JSON
-        .then(response => {
-            const url = new URL(window.location.href);
-            const targetFolder = url.searchParams.get('targetFolder') ?? '';
-            const driver = url.searchParams.get('driver') ?? 'public';
-            openFolderByAjax(targetFolder, driver);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+
+    fetch(route, {
+        method: 'POST'
+    })
+    .then(response => response.json()) // Assuming the response is JSON
+    .then(response => {
+        const url = new URL(window.location.href);
+        const targetFolder = url.searchParams.get('targetFolder') ?? '';
+        const driver = url.searchParams.get('driver') ?? 'public';
+        openFolderByAjax(targetFolder, driver);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 });
 
 function openFolderByAjax(targetFolder, driver) {

@@ -4,9 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Devrabiul\AdvancedFileManager\Controllers\FolderController;
 use Devrabiul\AdvancedFileManager\Controllers\FileManagerController;
 
-
 Route::group(['prefix' => 'advanced-file-manager'], function () {
-    
     Route::controller(FileManagerController::class)->group(function () {
         Route::post('folder-content', 'getFolderContent')->name('advanced-file-manager.folder-content');
         Route::post('smart-file-sync', 'syncFileList')->name('advanced-file-manager.smart-file-sync');
