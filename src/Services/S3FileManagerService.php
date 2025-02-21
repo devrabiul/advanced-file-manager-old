@@ -14,10 +14,10 @@ class S3FileManagerService
 {
     public static function getStorageDriver()
     {
-        if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.storage_drivers'))) {
+        if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.disks'))) {
             return request('driver', 'public');
         }
-        return config('advanced-file-manager.default') ?? 'public';
+        return config('advanced-file-manager.filesystem.default_disk') ?? 'public';
     }
 
     public static function checkS3DriverCredential()
