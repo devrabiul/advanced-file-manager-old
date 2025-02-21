@@ -2,9 +2,9 @@
 
     use Devrabiul\AdvancedFileManager\Services\AdvancedFileManagerService;
     use Devrabiul\AdvancedFileManager\Services\FileManagerHelperService;
+    use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
     use Illuminate\Support\Facades\Cache;
     use Illuminate\Pagination\LengthAwarePaginator;
-    use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 
     if (request('driver') == 's3') {
         $s3DriverCheck = S3FileManagerService::checkS3DriverCredential();
@@ -14,7 +14,7 @@
         }
     }
 
-    $storageDriver = FileManagerHelperService::getStorageDriver();
+    $storageDriver = S3FileManagerService::getStorageDriver();
     $requestData = !empty($request) ? $request : request()->all();
     $targetFolder = urldecode($requestData['targetFolder'] ?? '');
 

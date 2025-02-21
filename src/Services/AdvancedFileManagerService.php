@@ -8,17 +8,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
     use Illuminate\Pagination\LengthAwarePaginator;
 use Devrabiul\AdvancedFileManager\Services\FileManagerHelperService;
+use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 
 class AdvancedFileManagerService
 {
-    public static function getStorageDriver()
-    {
-        if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.disks'))) {
-            return request('driver', 'public');
-        }
-        return config('advanced-file-manager.filesystem.default_disk') ?? 'public';
-    }
-
     public static function getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData)
     {
         $AllFilesInCurrentFolder = Cache::remember($cacheKeyFiles, 3600, function () use ($targetFolder, $requestData) {
@@ -49,16 +42,16 @@ class AdvancedFileManagerService
         $targetFolder = !empty($targetFolder) ? $targetFolder : request('targetFolder') ?? '/';
 
         // Get all files and directories in the target folder
-        $AllFilesInCurrentFolder = Storage::disk(self::getStorageDriver())->files($targetFolder);
+        $AllFilesInCurrentFolder = Storage::disk(S3FileManagerService::getStorageDriver())->files($targetFolder);
 
-        $AllDirectories = Storage::disk(self::getStorageDriver())->directories($targetFolder);
+        $AllDirectories = Storage::disk(S3FileManagerService::getStorageDriver())->directories($targetFolder);
 
         $GenData['path'] = array_merge($AllFilesInCurrentFolder, $AllDirectories);
 
         $FilesWithInfo = [];
 
         foreach ($AllFilesInCurrentFolder as $file) {
-            $type = explode('/', Storage::disk(self::getStorageDriver())->mimeType($file))[0];
+            $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
             $name = explode('/', $file);
 
             if (!empty($targetFolder)) {
@@ -70,10 +63,10 @@ class AdvancedFileManagerService
                         'encodePath' => Crypt::encryptString($file),
                         'type' => $type,
                         'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-                        'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(self::getStorageDriver())->size($file)),
-                        'sizeInInteger' => Storage::disk(self::getStorageDriver())->size($file),
+                        'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+                        'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
                         'extension' => pathinfo($file, PATHINFO_EXTENSION),
-                        'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($file)))->diffForHumans()
+                        'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
                     ];
                 }
             }
@@ -93,13 +86,13 @@ class AdvancedFileManagerService
                 'size' => null,
                 'sizeInInteger' => null,
                 'extension' => null,
-                'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($directory)))->diffForHumans()
+                'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($directory)))->diffForHumans()
             ];
         }
 
         $totalFileSize = 0;
         foreach ($AllFilesInCurrentFolder as $file) {
-            $totalFileSize += Storage::disk(self::getStorageDriver())->size($file);
+            $totalFileSize += Storage::disk(S3FileManagerService::getStorageDriver())->size($file);
         }
 
         $GenData['size'] = FileManagerHelperService::getMasterFileFormatSize($totalFileSize);
@@ -108,9 +101,9 @@ class AdvancedFileManagerService
         $GenData['totalFiles'] = count($AllFilesInCurrentFolder);
         $GenData['totalDirectories'] = count($AllDirectories);
 
-        $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified('')))->diffForHumans();
+        $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified('')))->diffForHumans();
         if ($targetFolder && Storage::exists($targetFolder)) {
-            $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($targetFolder)))->diffForHumans();
+            $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($targetFolder)))->diffForHumans();
         }
 
         return $GenData;
@@ -119,8 +112,8 @@ class AdvancedFileManagerService
 
     public static function getAllFolders($targetFolder = null): array
     {
-        $allFolders = Storage::disk(self::getStorageDriver())->allDirectories($targetFolder);
-        $onlyFolder = Storage::disk(self::getStorageDriver())->Directories($targetFolder);
+        $allFolders = Storage::disk(S3FileManagerService::getStorageDriver())->allDirectories($targetFolder);
+        $onlyFolder = Storage::disk(S3FileManagerService::getStorageDriver())->Directories($targetFolder);
         $folderArray = [];
         foreach ($onlyFolder as $folder) {
             $name = explode('/', $folder);
@@ -132,7 +125,7 @@ class AdvancedFileManagerService
                 'lastPath' => str_replace(end($name), '', $folder),
                 'type' => 'Folder',
                 'icon' => self::getIconByExtension(extension: 'folder'),
-                'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($folder)))->diffForHumans(),
+                'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($folder)))->diffForHumans(),
                 'totalFiles' => $getAllFilesData['totalFiles'],
                 'size' => $getAllFilesData['size'],
                 'AllFiles' => $getAllFilesData,
@@ -231,12 +224,12 @@ class AdvancedFileManagerService
             'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
             'path' => $file,
             'encodePath' => $encodePath,
-            'type' => explode('/', Storage::disk(self::getStorageDriver())->mimeType($file))[0],
+            'type' => explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0],
             'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-            'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(self::getStorageDriver())->size($file)),
-            'sizeInInteger' => Storage::disk(self::getStorageDriver())->size($file),
+            'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+            'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
             'extension' => pathinfo($file, PATHINFO_EXTENSION),
-            'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($file)))->diffForHumans()
+            'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
         ];
     }
 
@@ -247,8 +240,8 @@ class AdvancedFileManagerService
 
         // Sort files by last modified time
         usort($allFiles['files'], function ($a, $b) {
-            $timeA = Storage::disk(self::getStorageDriver())->lastModified($a['path']);
-            $timeB = Storage::disk(self::getStorageDriver())->lastModified($b['path']);
+            $timeA = Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($a['path']);
+            $timeB = Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($b['path']);
             return $timeB - $timeA;
         });
 
@@ -265,14 +258,14 @@ class AdvancedFileManagerService
     public static function getFavoriteFiles(): array
     {
         // Assuming favorites are stored in a JSON file or database
-        $favoritesPath = Storage::disk(self::getStorageDriver())->path('favorites.json');
+        $favoritesPath = Storage::disk(S3FileManagerService::getStorageDriver())->path('favorites.json');
         $favorites = [];
 
         if (file_exists($favoritesPath)) {
             $favoritesList = json_decode(file_get_contents($favoritesPath), true) ?? [];
 
             foreach ($favoritesList as $filePath) {
-                if (Storage::disk(self::getStorageDriver())->exists($filePath)) {
+                if (Storage::disk(S3FileManagerService::getStorageDriver())->exists($filePath)) {
                     $fileInfo = self::getFileInformation(Crypt::encryptString($filePath));
                     $favorites[] = $fileInfo;
                 }
@@ -297,7 +290,7 @@ class AdvancedFileManagerService
 
     public static function toggleFavorite($filePath): bool
     {
-        $favoritesPath = Storage::disk(self::getStorageDriver())->path('favorites.json');
+        $favoritesPath = Storage::disk(S3FileManagerService::getStorageDriver())->path('favorites.json');
         $favorites = [];
 
         if (file_exists($favoritesPath)) {
@@ -324,12 +317,12 @@ class AdvancedFileManagerService
         $targetFolder = !empty($targetFolder) ? $targetFolder : request('targetFolder') ?? '/';
 
         // Get all files recursively from subdirectories
-        $AllFiles = Storage::disk(self::getStorageDriver())->allFiles($targetFolder);
+        $AllFiles = Storage::disk(S3FileManagerService::getStorageDriver())->allFiles($targetFolder);
 
         $FilesWithInfo = [];
 
         foreach ($AllFiles as $file) {
-            $type = explode('/', Storage::disk(self::getStorageDriver())->mimeType($file))[0];
+            $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
             $name = explode('/', $file);
 
             if ((!empty($request['filter']) && $type == $request['filter']) || (empty($request['filter']) || ($request['filter'] == 'all'))) {
@@ -340,10 +333,10 @@ class AdvancedFileManagerService
                     'encodePath' => Crypt::encryptString($file),
                     'type' => $type,
                     'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-                    'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(self::getStorageDriver())->size($file)),
-                    'sizeInInteger' => Storage::disk(self::getStorageDriver())->size($file),
+                    'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+                    'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
                     'extension' => pathinfo($file, PATHINFO_EXTENSION),
-                    'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($file)))->diffForHumans()
+                    'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
                 ];
             }
         }

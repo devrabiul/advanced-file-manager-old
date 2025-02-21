@@ -9,28 +9,21 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Devrabiul\AdvancedFileManager\Services\AdvancedFileManagerService;
+use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 
 class FileManagerHelperService
 {
-    public static function getStorageDriver()
-    {
-        if (request()->has('driver') && !empty(request('driver')) && array_key_exists(request('driver'), config('advanced-file-manager.disks'))) {
-            return request('driver', 'public');
-        }
-        return config('advanced-file-manager.filesystem.default_disk') ?? 'public';
-    }
-
     public static function getAllFiles($targetFolder = null, object|array $request = null): array
     {
         $GenData = [];
         $request = !empty($request) ? $request : request()->all();
         $targetFolder = !empty($targetFolder) ? $targetFolder : request('targetFolder') ?? '/';
-        $AllFilesInCurrentFolder = Storage::disk(self::getStorageDriver())->files($targetFolder);
+        $AllFilesInCurrentFolder = Storage::disk(S3FileManagerService::getStorageDriver())->files($targetFolder);
         $GenData['path'] = $AllFilesInCurrentFolder;
 
         $FilesWithInfo = [];
         foreach ($AllFilesInCurrentFolder as $file) {
-            $type = explode('/', Storage::disk(self::getStorageDriver())->mimeType($file))[0];
+            $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
             $name = explode('/', $file);
             if (!empty($targetFolder) && count($name) > 1) {
                 if ((!empty($request['filter']) && $type == $request['filter']) || (empty($request['filter']) || ($request['filter'] == 'all'))) {
@@ -41,10 +34,10 @@ class FileManagerHelperService
                         'encodePath' => Crypt::encryptString($file),
                         'type' => $type,
                         'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-                        'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(self::getStorageDriver())->size($file)),
-                        'sizeInInteger' => Storage::disk(self::getStorageDriver())->size($file),
+                        'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+                        'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
                         'extension' => pathinfo($file, PATHINFO_EXTENSION),
-                        'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($file)))->diffForHumans()
+                        'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
                     ];
                 }
             }
@@ -52,16 +45,16 @@ class FileManagerHelperService
 
         $totalFileSize = 0;
         foreach ($AllFilesInCurrentFolder as $file) {
-            $totalFileSize += Storage::disk(self::getStorageDriver())->size($file);
+            $totalFileSize += Storage::disk(S3FileManagerService::getStorageDriver())->size($file);
         }
 
         $GenData['size'] = FileManagerHelperService::getMasterFileFormatSize($totalFileSize);
         $GenData['files'] = $FilesWithInfo;
         $GenData['totalFiles'] = count($AllFilesInCurrentFolder);
 
-        $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified('')))->diffForHumans();
+        $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified('')))->diffForHumans();
         if ($targetFolder && Storage::exists($targetFolder)) {
-            $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(self::getStorageDriver())->lastModified($targetFolder)))->diffForHumans();
+            $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($targetFolder)))->diffForHumans();
         }
 
         return $GenData;
