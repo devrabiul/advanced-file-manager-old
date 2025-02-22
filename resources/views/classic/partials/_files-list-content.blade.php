@@ -10,8 +10,7 @@
                 <div class="files-icon"
                      onclick="previewFile('{{ $File['type'] }}', '{{ $File['path'] }}', '{{ $File['short_name'] }}')">
                     @if ($File['type'] == 'image')
-                        <img
-                                src="{{ FileManagerHelperService::masterFileManagerStorage('storage/app/public/'.$File['path']) }}"
+                        <img src="{{ $File['full_path'] }}"
                                 alt="" srcset="" class="image-file">
                     @elseif($File['type'] == 'video')
                         <img src="{{ url('vendor/advanced-file-manager/assets/images/video.svg') }}" alt="" srcset="">

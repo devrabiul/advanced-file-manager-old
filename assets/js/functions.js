@@ -205,24 +205,3 @@ function deleteFolder(path) {
         }
     });
 }
-
-function previewFile(fileType, filePath, fileName) {
-    if (fileType === 'image') {
-        const modal = document.getElementById('imageViewerModal');
-        const modalImg = document.getElementById('modalImage');
-        modal.style.display = "block";
-        modalImg.src = "{{ masterFileManagerStorage('storage/app/public/') }}" + filePath;
-    } else {
-        // Show file info modal for non-image files
-        const modal = document.getElementById('fileInfoModal');
-        const titleElement = document.getElementById('fileInfoTitle');
-        const detailsElement = document.getElementById('fileInfoDetails');
-
-        titleElement.textContent = fileName;
-        detailsElement.innerHTML = `
-            <p><strong>Type:</strong> ${fileType}</p>
-            <p><strong>Path:</strong> ${filePath}</p>
-        `;
-        modal.style.display = "block";
-    }
-}

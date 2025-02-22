@@ -20,6 +20,7 @@ function openFolderByAjax(targetFolder, driver) {
     const url = new URL(window.location.href);
     const route = document.querySelector('.file-manager-files-container').getAttribute('data-route');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    driver = driver ?? (url.searchParams.get('driver') ?? 'public');
 
     const formData = new FormData();
     formData.append('_token', csrfToken);
@@ -220,6 +221,8 @@ document.querySelector('.file-manager-root-container').addEventListener('change'
     if (event.target && event.target.matches('.quick-access-dropdown .custom-select')) {
         event.preventDefault();
 
+        const contentContainer = document.querySelector('.file-manager-sidebar-container');
+        contentContainer.classList.remove('show');
         const driver = event.target.value;
         if (driver) {
             openFolderByAjax('', driver);

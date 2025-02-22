@@ -3,12 +3,13 @@
 namespace Devrabiul\AdvancedFileManager\Services;
 
 use Carbon\Carbon;
+use Aws\S3\S3Client;
+use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Devrabiul\AdvancedFileManager\Services\FileManagerHelperService;
-use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 
 class AdvancedFileManagerService
 {
@@ -54,17 +55,27 @@ class AdvancedFileManagerService
         foreach ($AllDirectories as $directory) {
             $dirName = explode('/', $directory);
 
+            // Get files inside the directory
+            $filesInside = Storage::disk(S3FileManagerService::getStorageDriver())->files($directory);
+
+            // Get the latest modified file timestamp inside the directory
+            $latestTimestamp = !empty($filesInside)
+                ? max(array_map(fn($file) => Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file), $filesInside))
+                : null;
+
             $DirectoriesWithInfo[] = [
                 'name' => end($dirName),
                 'short_name' => FileManagerHelperService::getFileMinifyString(end($dirName)),
                 'path' => $directory,
+                'driver' => S3FileManagerService::getStorageDriver(),
                 'encodePath' => Crypt::encryptString($directory),
                 'type' => 'directory',
                 'icon' => 'folder',
                 'size' => null,
                 'sizeInInteger' => null,
                 'extension' => null,
-                'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($directory)))->diffForHumans()
+                // 'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($directory)))->diffForHumans()
+                'last_modified' => $latestTimestamp
             ];
         }
 
@@ -79,14 +90,15 @@ class AdvancedFileManagerService
         $GenData['totalFiles'] = count($AllFilesInCurrentFolder);
         $GenData['totalDirectories'] = count($AllDirectories);
 
-        $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified('')))->diffForHumans();
-        if ($targetFolder && Storage::exists($targetFolder)) {
-            $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($targetFolder)))->diffForHumans();
-        }
+        try {
+            $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified('')))->diffForHumans();
+            if ($targetFolder && Storage::exists($targetFolder)) {
+                $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($targetFolder)))->diffForHumans();
+            }
+        } catch (\Exception $e) {}
 
         return $GenData;
     }
-
 
     public static function getFilesWithInfo($filePaths = []): array
     {
@@ -98,6 +110,8 @@ class AdvancedFileManagerService
                 'name' => end($name),
                 'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
                 'path' => $file,
+                'full_path' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file)['path'],
+                'full_path_info' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file),
                 'encodePath' => Crypt::encryptString($file),
                 'type' => $type,
                 'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
@@ -114,10 +128,20 @@ class AdvancedFileManagerService
     {
         $allFolders = Storage::disk(S3FileManagerService::getStorageDriver())->allDirectories($targetFolder);
         $onlyFolder = Storage::disk(S3FileManagerService::getStorageDriver())->Directories($targetFolder);
+
         $folderArray = [];
         foreach ($onlyFolder as $folder) {
             $name = explode('/', $folder);
             $getAllFilesData = self::getAllFiles($folder);
+
+            // Get all files inside the directory
+            $filesInside = Storage::disk(S3FileManagerService::getStorageDriver())->files($folder);
+
+            // Get last modified timestamp from the latest file inside the folder
+            $latestTimestamp = !empty($filesInside)
+                ? max(array_map(fn($file) => Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file), $filesInside))
+                : null; // No files inside
+
             $folderArray[] = [
                 'name' => end($name),
                 'path' => $folder,
@@ -125,7 +149,10 @@ class AdvancedFileManagerService
                 'lastPath' => str_replace(end($name), '', $folder),
                 'type' => 'Folder',
                 'icon' => self::getIconByExtension(extension: 'folder'),
-                'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($folder)))->diffForHumans(),
+                // 'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($folder)))->diffForHumans(),
+                'last_modified' => $latestTimestamp
+                    ? Carbon::parse(date('Y-m-d H:i:s', $latestTimestamp))->diffForHumans()
+                    : 'No files found',
                 'totalFiles' => $getAllFilesData['totalFiles'],
                 'size' => $getAllFilesData['size'],
                 'AllFiles' => $getAllFilesData,
@@ -402,10 +429,6 @@ class AdvancedFileManagerService
             'music' => self::getQuickAccessFilesByType('music', '/'),
             'documents' => self::getQuickAccessFilesByType('documents', '/'),
             'archives' => self::getQuickAccessFilesByType('archives', '/'),
-            'pdfs' => self::getQuickAccessFilesByType('pdfs', '/'),
-            'spreadsheets' => self::getQuickAccessFilesByType('spreadsheets', '/'),
-            'presentations' => self::getQuickAccessFilesByType('presentations', '/'),
-            'fonts' => self::getQuickAccessFilesByType('fonts', '/')
         ];
     }
 }

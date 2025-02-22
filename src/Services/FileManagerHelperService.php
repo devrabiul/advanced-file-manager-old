@@ -23,26 +23,7 @@ class FileManagerHelperService
         $GenData['path'] = $AllFilesInCurrentFolder;
 
         $FilesWithInfo = [];
-        foreach ($AllFilesInCurrentFolder as $file) {
-            $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
-            $name = explode('/', $file);
-            if (!empty($targetFolder) && count($name) > 1) {
-                if ((!empty($request['filter']) && $type == $request['filter']) || (empty($request['filter']) || ($request['filter'] == 'all'))) {
-                    $FilesWithInfo[] = [
-                        'name' => end($name),
-                        'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
-                        'path' => $file,
-                        'encodePath' => Crypt::encryptString($file),
-                        'type' => $type,
-                        'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-                        'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
-                        'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
-                        'extension' => pathinfo($file, PATHINFO_EXTENSION),
-                        'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
-                    ];
-                }
-            }
-        }
+        $FilesWithInfo = AdvancedFileManagerService::getFilesWithInfo(filePaths: $AllFilesInCurrentFolder);
 
         $totalFileSize = 0;
         foreach ($AllFilesInCurrentFolder as $file) {
@@ -64,9 +45,9 @@ class FileManagerHelperService
     public static function renderAdvancedFileManagerView(array|object $request = [], string $type = null)
     {
         $requestData = !empty($request) ? $request : request()->all();
-        $targetFolder = urldecode($requestData['targetFolder'] ?? '');
+        $targetFolder = urldecode($requestData['targetFolder'] ?? '/');
         $storageDriver = S3FileManagerService::getStorageDriver();
-        
+
         $cacheKeyAllFiles = "files_in_{$storageDriver}";
         $cacheKeyFiles = "files_in_{$targetFolder}_{$storageDriver}";
         $cacheKeyFolders = "folders_in_{$targetFolder}_{$storageDriver}";
@@ -142,14 +123,6 @@ class FileManagerHelperService
                             return in_array($extension, ['mp3', 'wav', 'ogg', 'wma', 'm4a', 'aac', 'flac', 'alac']);
                         case 'archives':
                             return in_array($extension, ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'iso']);
-                        case 'pdfs':
-                            return in_array($extension, ['pdf']);
-                        case 'spreadsheets':
-                            return in_array($extension, ['xls', 'xlsx', 'csv', 'ods', 'numbers']);
-                        case 'presentations':
-                            return in_array($extension, ['ppt', 'pptx', 'key', 'odp']);
-                        case 'fonts':
-                            return in_array($extension, ['ttf', 'otf', 'woff', 'woff2', 'eot']);
                         case 'recent':
                             // Get files modified in the last 7 days
                             $lastModified = Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file);
@@ -162,10 +135,6 @@ class FileManagerHelperService
                                 'mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', '3gp', 'm4v', // videos
                                 'mp3', 'wav', 'ogg', 'wma', 'm4a', 'aac', 'flac', 'alac', // music
                                 'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'iso', // archives
-                                'pdf', // pdfs
-                                'xls', 'xlsx', 'csv', 'ods', 'numbers', // spreadsheets
-                                'ppt', 'pptx', 'key', 'odp', // presentations
-                                'ttf', 'otf', 'woff', 'woff2', 'eot' // fonts
                             ];
                             return !in_array($extension, $commonExtensions);
                         default:
@@ -234,21 +203,11 @@ class FileManagerHelperService
     public static function masterFileManagerStorage(string $path): string
     {
         if (config('advanced-file-manager.system_processing_directory') == 'public') {
-            $result = str_replace('storage/app/public', 'storage', $path);
+            $result = str_replace('storage/public', 'storage', str_replace('storage/app/public', 'storage', $path));
         } else {
             $result = $path;
         }
         return asset($result);
-    }
-    
-    public static function masterFileManagerAsset(string $path): string
-    {
-        if (config('advanced-file-manager.system_processing_directory') == 'public') {
-            $result = asset('vendor/devrabiul/advanced-file-manager/' . $path);
-        } else {
-            $result = asset('public/vendor/devrabiul/advanced-file-manager/' . $path);
-        }
-        return $result;
     }
     
     public static function cacheKeys($cacheKey): void

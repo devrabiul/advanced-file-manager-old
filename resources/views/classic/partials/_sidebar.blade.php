@@ -22,17 +22,16 @@
     <div class="quick-access-dropdown">
         <select class="custom-select">
             @foreach($enabledDrivers as $key => $driver)
-                <option value="{{ $driver['driver'] }}">{{ Str::upper($key) }}</option>
+                <option value="{{ $driver['driver'] }}"
+                        {{ config('advanced-file-manager.filesystem.default_disk') == $driver['driver'] ? 'selected':''}}>
+                    {{ Str::upper($key) }}
+                </option>
             @endforeach
         </select>
         <i class="bi bi-chevron-down"></i>
     </div>
 
     <div class="quick-access-section">
-        @if (request('driver') == 's3')
-            @dd(S3FileManagerService::checkS3DriverCredential())
-        @endif
-
         <div class="quick-access-items">
             <div class="quick-access-item item-cursor-pointer" onclick="openFolderByAjax('')">
                 <div class="quick-access-content">

@@ -7,14 +7,6 @@
     use Illuminate\Pagination\LengthAwarePaginator;
     use Illuminate\Support\Facades\Storage;
 
-    if (request('driver') == 's3') {
-        $s3DriverCheck = S3FileManagerService::checkS3DriverCredential();
-        if (!$s3DriverCheck['status']) {
-            dd($s3DriverCheck);
-            return redirect()->route('advanced-file-manager.index')->with('error', $s3DriverCheck['message']);
-        }
-    }
-
     $storageDriver = S3FileManagerService::getStorageDriver();
     $requestData = !empty($request) ? $request : request()->all();
     $targetFolder = urldecode($requestData['targetFolder'] ?? '');
@@ -62,7 +54,10 @@
             <button id="sidebarToggle" class="sidebar-toggle">
                 <i class="bi bi-list"></i>
             </button>
-            <h4>File Manager</h4>
+            <h4>
+                {{ config('advanced-file-manager.name') }}
+                <span class="version-badge">v1.0</span>
+            </h4>
         </div>
 
         <div class="header-right">
