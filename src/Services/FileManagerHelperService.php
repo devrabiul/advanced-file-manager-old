@@ -30,7 +30,7 @@ class FileManagerHelperService
             $totalFileSize += Storage::disk(S3FileManagerService::getStorageDriver())->size($file);
         }
 
-        $GenData['size'] = FileManagerHelperService::getMasterFileFormatSize($totalFileSize);
+        $GenData['size'] = FileManagerHelperService::getAdvancedFileFormatSize($totalFileSize);
         $GenData['files'] = $FilesWithInfo;
         $GenData['totalFiles'] = count($AllFilesInCurrentFolder);
 
@@ -187,7 +187,7 @@ class FileManagerHelperService
         return $prefix . $ellipsis . $suffix;
     }
     
-    public static function getMasterFileFormatSize($size = 0): string
+    public static function getAdvancedFileFormatSize($size = 0): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
@@ -200,7 +200,7 @@ class FileManagerHelperService
         return round($size, 2) . ' ' . $units[$unitIndex];
     }
 
-    public static function masterFileManagerStorage(string $path): string
+    public static function advancedFileManagerStorage(string $path): string
     {
         if (config('advanced-file-manager.system_processing_directory') == 'public') {
             $result = str_replace('storage/public', 'storage', str_replace('storage/app/public', 'storage', $path));
@@ -212,10 +212,10 @@ class FileManagerHelperService
     
     public static function cacheKeys($cacheKey): void
     {
-        $cacheKeys = Cache::get('masterFileManagerCacheKeys', []);
+        $cacheKeys = Cache::get('advancedFileManagerCacheKeys', []);
         if (!in_array($cacheKey, $cacheKeys)) {
             $cacheKeys[] = $cacheKey;
-            Cache::put('masterFileManagerCacheKeys', $cacheKeys, 60 * 60 * 3);
+            Cache::put('advancedFileManagerCacheKeys', $cacheKeys, 60 * 60 * 3);
         }
     }
     

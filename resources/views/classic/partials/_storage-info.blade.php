@@ -33,14 +33,14 @@ $availableSpace = disk_free_space($diskPath);
         <div class="storage-used">
             <span class="storage-label">Used</span>
             <span class="storage-value">
-                {{ FileManagerHelperService::getMasterFileFormatSize($availableSpace) }}
+                {{ FileManagerHelperService::getAdvancedFileFormatSize($availableSpace) }}
             </span>
         </div>
         <div class="storage-divider"></div>
         <div class="storage-total">
             <span class="storage-label">Total</span>
             <span class="storage-value">
-                {{ FileManagerHelperService::getMasterFileFormatSize($totalSpace) }}
+                {{ FileManagerHelperService::getAdvancedFileFormatSize($totalSpace) }}
             </span>
         </div>
     </div>

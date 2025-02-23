@@ -2,18 +2,20 @@
  use Devrabiul\AdvancedFileManager\Services\FileManagerHelperService;
 ?>
 
-
 @if(count($AllFilesInCurrentFolderFiles) > 0)
     <div class="file-manager-files-section {{ session('file_list_container_view_mode') ?? 'list-view' }}" id="filesContainer">
         @foreach ($AllFilesInCurrentFolderFiles as $key => $File)
             <div class="file-manager-files-item" data-filename="{{ strtolower($File['short_name']) }}">
-                <div class="files-icon"
-                     onclick="previewFile('{{ $File['type'] }}', '{{ $File['path'] }}', '{{ $File['short_name'] }}')">
+                <div class="files-icon">
                     @if ($File['type'] == 'image')
-                        <img src="{{ $File['full_path'] }}"
-                                alt="" srcset="" class="image-file">
+                        <a href="{{ $File['full_path'] }}" class="rixet-lightbox" data-gallery="gallery" data-title="{{ $File['name'] }} | {{ $File['size'] }}">
+                            <img src="{{ $File['full_path'] }}" alt="" srcset="" class="image-file">
+                        </a>
                     @elseif($File['type'] == 'video')
-                        <img src="{{ url('vendor/advanced-file-manager/assets/images/video.svg') }}" alt="" srcset="">
+                        <a href="{{ $File['full_path'] }}" class="rixet-lightbox rixet-lightbox-video" data-gallery="gallery" data-title="{{ $File['name'] }} | {{ $File['size'] }}">
+                            <video src="{{ $File['full_path'] }}" style="display:none;" preload="metadata" 
+                            data-thumbnail="{{ url('vendor/advanced-file-manager/assets/images/image.svg') }}"></video>
+                        </a>                                      
                     @else
                         <img src="{{ url('vendor/advanced-file-manager/assets/images/zip.svg') }}" alt="" srcset="">
                     @endif
@@ -47,8 +49,7 @@
                         <a href="#" onclick="moveFile('{{ $File['path'] }}')">
                             <i class="bi bi-arrows-move"></i> Move
                         </a>
-                        <a href="{{ FileManagerHelperService::masterFileManagerStorage('storage/app/public/'.$File['path']) }}"
-                           download>
+                        <a href="{{ $File['full_path'] }}" download>
                             <i class="bi bi-download"></i> Download
                         </a>
                         <a href="#" onclick="getFileInfo('{{ $File['path'] }}')" class="info-option">

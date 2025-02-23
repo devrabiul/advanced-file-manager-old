@@ -84,7 +84,7 @@ class AdvancedFileManagerService
             $totalFileSize += Storage::disk(S3FileManagerService::getStorageDriver())->size($file);
         }
 
-        $GenData['size'] = FileManagerHelperService::getMasterFileFormatSize($totalFileSize);
+        $GenData['size'] = FileManagerHelperService::getAdvancedFileFormatSize($totalFileSize);
         $GenData['files'] = $FilesWithInfo;
         $GenData['directories'] = $DirectoriesWithInfo;
         $GenData['totalFiles'] = count($AllFilesInCurrentFolder);
@@ -109,13 +109,14 @@ class AdvancedFileManagerService
             $FilesWithInfo[] = [
                 'name' => end($name),
                 'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
+                'driver' => S3FileManagerService::getStorageDriver(),
                 'path' => $file,
                 'full_path' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file)['path'],
                 'full_path_info' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file),
                 'encodePath' => Crypt::encryptString($file),
                 'type' => $type,
                 'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-                'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+                'size' => FileManagerHelperService::getAdvancedFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
                 'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
                 'extension' => pathinfo($file, PATHINFO_EXTENSION),
                 'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
@@ -169,27 +170,91 @@ class AdvancedFileManagerService
 
     public static function getIconByExtension($extension = null): string
     {
-        $iconMapping = [
-            'folder' => '<i class="fas fa-folder"></i>',
-            'jpg' => '<i class="fas fa-image"></i>',
-            'jpeg' => '<i class="fas fa-image"></i>',
-            'png' => '<i class="fas fa-image"></i>',
-            'pdf' => '<i class="fas fa-file-pdf"></i>',
-            'zip' => '<i class="far fa-file-archive"></i>',
-            'doc' => '<i class="fas fa-file-word"></i>',
-            'docx' => '<i class="fas fa-file-word"></i>',
-            'xls' => '<i class="fas fa-file-excel"></i>',
-            'xlsx' => '<i class="fas fa-file-excel"></i>',
-            'ppt' => '<i class="fas fa-file-powerpoint"></i>',
-            'pptx' => '<i class="fas fa-file-powerpoint"></i>',
-            'txt' => '<i class="fas fa-file-alt"></i>',
-            'mp3' => '<i class="fas fa-music"></i>',
-            'wav' => '<i class="fas fa-music"></i>',
-            'mp4' => '<i class="fas fa-film"></i>',
-            'avi' => '<i class="fas fa-film"></i>',
-            // Add more file extensions as needed
+        $iconType = config('advanced-file-manager.font_type') ?? 'bootstrap';
+
+        $iconMappings = [
+            'bootstrap' => [
+                'folder' => '<i class="bi bi-folder"></i>',
+                'jpg' => '<i class="bi bi-file-image"></i>',
+                'jpeg' => '<i class="bi bi-file-image"></i>',
+                'png' => '<i class="bi bi-file-image"></i>',
+                'gif' => '<i class="bi bi-file-image"></i>',
+                'svg' => '<i class="bi bi-file-image"></i>',
+                'pdf' => '<i class="bi bi-file-pdf"></i>',
+                'zip' => '<i class="bi bi-file-zip"></i>',
+                'rar' => '<i class="bi bi-file-zip"></i>',
+                '7z' => '<i class="bi bi-file-zip"></i>',
+                'doc' => '<i class="bi bi-file-word"></i>',
+                'docx' => '<i class="bi bi-file-word"></i>',
+                'xls' => '<i class="bi bi-file-excel"></i>',
+                'xlsx' => '<i class="bi bi-file-excel"></i>',
+                'ppt' => '<i class="bi bi-file-ppt"></i>',
+                'pptx' => '<i class="bi bi-file-ppt"></i>',
+                'txt' => '<i class="bi bi-file-text"></i>',
+                'mp3' => '<i class="bi bi-file-music"></i>',
+                'wav' => '<i class="bi bi-file-music"></i>',
+                'mp4' => '<i class="bi bi-file-play"></i>',
+                'avi' => '<i class="bi bi-file-play"></i>',
+                'mov' => '<i class="bi bi-file-play"></i>',
+                'default' => '<i class="bi bi-file"></i>'
+            ],
+            'font-awesome' => [
+                'folder' => '<i class="fas fa-folder"></i>',
+                'jpg' => '<i class="fas fa-image"></i>',
+                'jpeg' => '<i class="fas fa-image"></i>',
+                'png' => '<i class="fas fa-image"></i>',
+                'gif' => '<i class="fas fa-image"></i>',
+                'svg' => '<i class="fas fa-image"></i>',
+                'pdf' => '<i class="fas fa-file-pdf"></i>',
+                'zip' => '<i class="far fa-file-archive"></i>',
+                'rar' => '<i class="far fa-file-archive"></i>',
+                '7z' => '<i class="far fa-file-archive"></i>',
+                'doc' => '<i class="fas fa-file-word"></i>',
+                'docx' => '<i class="fas fa-file-word"></i>',
+                'xls' => '<i class="fas fa-file-excel"></i>',
+                'xlsx' => '<i class="fas fa-file-excel"></i>',
+                'ppt' => '<i class="fas fa-file-powerpoint"></i>',
+                'pptx' => '<i class="fas fa-file-powerpoint"></i>',
+                'txt' => '<i class="fas fa-file-alt"></i>',
+                'mp3' => '<i class="fas fa-music"></i>',
+                'wav' => '<i class="fas fa-music"></i>',
+                'mp4' => '<i class="fas fa-film"></i>',
+                'avi' => '<i class="fas fa-film"></i>',
+                'mov' => '<i class="fas fa-film"></i>',
+                'default' => '<i class="fas fa-file"></i>'
+            ],
+            'material' => [
+                'folder' => '<i class="material-icons">folder</i>',
+                'jpg' => '<i class="material-icons">image</i>',
+                'jpeg' => '<i class="material-icons">image</i>',
+                'png' => '<i class="material-icons">image</i>',
+                'gif' => '<i class="material-icons">image</i>',
+                'svg' => '<i class="material-icons">image</i>',
+                'pdf' => '<i class="material-icons">picture_as_pdf</i>',
+                'zip' => '<i class="material-icons">folder_zip</i>',
+                'rar' => '<i class="material-icons">folder_zip</i>',
+                '7z' => '<i class="material-icons">folder_zip</i>',
+                'doc' => '<i class="material-icons">article</i>',
+                'docx' => '<i class="material-icons">article</i>',
+                'xls' => '<i class="material-icons">table_chart</i>',
+                'xlsx' => '<i class="material-icons">table_chart</i>',
+                'ppt' => '<i class="material-icons">slideshow</i>',
+                'pptx' => '<i class="material-icons">slideshow</i>',
+                'txt' => '<i class="material-icons">description</i>',
+                'mp3' => '<i class="material-icons">audio_file</i>',
+                'wav' => '<i class="material-icons">audio_file</i>',
+                'mp4' => '<i class="material-icons">video_file</i>',
+                'avi' => '<i class="material-icons">video_file</i>',
+                'mov' => '<i class="material-icons">video_file</i>',
+                'default' => '<i class="material-icons">insert_drive_file</i>'
+            ]
         ];
-        return $iconMapping[$extension] ?? '<i class="fas fa-file"></i>';
+
+        // Get the icon mapping for the selected icon type
+        $selectedMapping = $iconMappings[$iconType] ?? $iconMappings['bootstrap'];
+
+        // Return the icon for the extension, or the default icon if not found
+        return $selectedMapping[strtolower($extension)] ?? $selectedMapping['default'];
     }
 
     public static function getAllFilesOverview(array $AllFilesWithInfo): array
@@ -234,11 +299,11 @@ class AdvancedFileManagerService
         }
 
         return [
-            'image' => ['size' => FileManagerHelperService::getMasterFileFormatSize($typeImageTotalSize), 'count' => $typeImageCount],
-            'video' => ['size' => FileManagerHelperService::getMasterFileFormatSize($typeVideoTotalSize), 'count' => $typeVideoCount],
-            'audio' => ['size' => FileManagerHelperService::getMasterFileFormatSize($typeAudioTotalSize), 'count' => $typeAudioCount],
-            'others' => ['size' => FileManagerHelperService::getMasterFileFormatSize($typeOthersTotalSize), 'count' => $typeOthersCount],
-            'document' => ['size' => FileManagerHelperService::getMasterFileFormatSize($typeDocTotalSize), 'count' => $typeDocCount],
+            'image' => ['size' => FileManagerHelperService::getAdvancedFileFormatSize($typeImageTotalSize), 'count' => $typeImageCount],
+            'video' => ['size' => FileManagerHelperService::getAdvancedFileFormatSize($typeVideoTotalSize), 'count' => $typeVideoCount],
+            'audio' => ['size' => FileManagerHelperService::getAdvancedFileFormatSize($typeAudioTotalSize), 'count' => $typeAudioCount],
+            'others' => ['size' => FileManagerHelperService::getAdvancedFileFormatSize($typeOthersTotalSize), 'count' => $typeOthersCount],
+            'document' => ['size' => FileManagerHelperService::getAdvancedFileFormatSize($typeDocTotalSize), 'count' => $typeDocCount],
         ];
     }
 
@@ -249,11 +314,14 @@ class AdvancedFileManagerService
         return [
             'name' => end($name),
             'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
+            'driver' => S3FileManagerService::getStorageDriver(),
             'path' => $file,
+            'full_path' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file)['path'],
+            'full_path_info' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file),
             'encodePath' => $encodePath,
             'type' => explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0],
             'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-            'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+            'size' => FileManagerHelperService::getAdvancedFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
             'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
             'extension' => pathinfo($file, PATHINFO_EXTENSION),
             'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
@@ -312,7 +380,7 @@ class AdvancedFileManagerService
         foreach ($files as $file) {
             $totalSize += $file['sizeInInteger'] ?? 0;
         }
-        return FileManagerHelperService::getMasterFileFormatSize($totalSize);
+        return FileManagerHelperService::getAdvancedFileFormatSize($totalSize);
     }
 
     public static function toggleFavorite($filePath): bool
@@ -395,11 +463,14 @@ class AdvancedFileManagerService
                 $FilesWithInfo[] = [
                     'name' => end($name),
                     'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
+                    'driver' => S3FileManagerService::getStorageDriver(),
                     'path' => $file,
+                    'full_path' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file)['path'],
+                    'full_path_info' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file),
                     'encodePath' => Crypt::encryptString($file),
                     'type' => $type,
                     'icon' => self::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
-                    'size' => FileManagerHelperService::getMasterFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+                    'size' => FileManagerHelperService::getAdvancedFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
                     'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
                     'extension' => $extension,
                     'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
@@ -421,14 +492,20 @@ class AdvancedFileManagerService
 
     public static function getQuickAccessStats(): array
     {
-        return [
-            'recent' => self::getRecentFiles(),
-            'favorites' => self::getFavoriteFiles(),
-            'images' => self::getQuickAccessFilesByType('images', '/'),
-            'videos' => self::getQuickAccessFilesByType('videos', '/'),
-            'music' => self::getQuickAccessFilesByType('music', '/'),
-            'documents' => self::getQuickAccessFilesByType('documents', '/'),
-            'archives' => self::getQuickAccessFilesByType('archives', '/'),
-        ];
+        // Cache key with driver prefix to avoid conflicts
+        $cacheKey = S3FileManagerService::getStorageDriver() . '_quick_access_stats';
+        FileManagerHelperService::cacheKeys($cacheKey);
+        
+        return Cache::remember($cacheKey, 3600, function () {
+            return [
+                'recent' => self::getRecentFiles(),
+                'favorites' => self::getFavoriteFiles(),
+                'images' => self::getQuickAccessFilesByType('images', '/'),
+                'videos' => self::getQuickAccessFilesByType('videos', '/'),
+                'music' => self::getQuickAccessFilesByType('music', '/'),
+                'documents' => self::getQuickAccessFilesByType('documents', '/'),
+                'archives' => self::getQuickAccessFilesByType('archives', '/'),
+            ];
+        });
     }
 }

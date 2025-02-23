@@ -58,6 +58,8 @@ function openFolderByAjax(targetFolder, driver) {
             url.searchParams.delete('driver');
         }
         window.history.pushState({}, '', url);
+
+        reInitGLightbox();
     })
     .catch(error => {
         console.error('Error:', error);
@@ -98,6 +100,8 @@ document.querySelector('.file-manager-root-container').addEventListener('click',
             // Update the URL query parameters
             url.searchParams.set('page', page);
             window.history.pushState({}, '', url);
+
+            reInitGLightbox();
         })
         .catch(error => {
             console.error('Error:', error);
@@ -205,6 +209,8 @@ document.querySelector('.file-manager-root-container').addEventListener('input',
 
             // Re-set the search input value to the old one
             searchInput.value = searchTerm;
+
+            reInitGLightbox();
         })
         .catch(error => {
             console.error('Error:', error);
@@ -271,6 +277,8 @@ function openFilesByAjax(fileType, driver = 'public') {
             url.searchParams.delete('driver');
         }
         window.history.pushState({}, '', url);
+
+        reInitGLightbox();
     })
     .catch(error => {
         console.error('Error:', error);

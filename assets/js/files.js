@@ -35,6 +35,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 $(document).ready(function() {
+
+    
+
     let pond = null;
 
     // Modal controls

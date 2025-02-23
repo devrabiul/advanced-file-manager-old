@@ -242,4 +242,25 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Icon Font Library
+    |--------------------------------------------------------------------------
+    |
+    | Choose which icon library to use for file and folder icons in the file manager.
+    | Available options:
+    | - 'bootstrap': Uses Bootstrap Icons (requires bootstrap-icons CSS)
+    | - 'font-awesome': Uses Font Awesome 5 icons (requires @fortawesome/fontawesome-free)
+    | - 'material': Uses Google Material Icons (requires material-icons font)
+    |
+    | Required CDN includes:
+    | bootstrap: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    | font-awesome: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    | material: <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    |
+    */
+
+    'font_type' => env('FILE_MANAGER_FONT_TYPE', 'bootstrap'),
+    
 ];

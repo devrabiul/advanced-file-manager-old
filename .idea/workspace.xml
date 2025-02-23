@@ -5,16 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bb9ced93-813e-4048-99a5-be11fd89cfe7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/assets/css/header.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/header.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/files.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/files.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/js/ajax-function.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/ajax-function.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/functions.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/functions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/files.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/files.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/advanced-file-manager.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/advanced-file-manager.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/classic/index.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/index.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_files-list-content.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_files-list-content.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_sidebar.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_sidebar.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_storage-info.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_storage-info.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/script.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/script.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/style.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/style.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Services/AdvancedFileManagerService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/AdvancedFileManagerService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Services/FileManagerHelperService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/FileManagerHelperService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/S3FileManagerService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/S3FileManagerService.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,26 +77,29 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2tJ3fExqeJ1Q0FiZCrT1sLJ57Ia" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="autoscrollToSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="openDirectoriesWithSingleClick" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Applications/MAMP/htdocs/advanced-file-manager",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Applications/MAMP/htdocs/advanced-file-manager&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -111,7 +117,8 @@
       <option name="presentableId" value="Default" />
       <updated>1740056451772</updated>
       <workItem from="1740056453578" duration="400000" />
-      <workItem from="1740193801722" duration="16198000" />
+      <workItem from="1740193801722" duration="16795000" />
+      <workItem from="1740280305136" duration="7076000" />
     </task>
     <servers />
   </component>

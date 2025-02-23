@@ -17,3 +17,5 @@
 <link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/css/modal.css') }}">
 <link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/css/pagination.css') }}">
 <link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/filepond/filepond.css') }}">
+
+<link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/rixetlightbox/rixetlightbox.css') }}">

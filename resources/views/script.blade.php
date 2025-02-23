@@ -20,3 +20,6 @@
 <script src="{{ url('vendor/advanced-file-manager/assets/js/files.js') }}"></script>
 <script src="{{ url('vendor/advanced-file-manager/assets/js/functions.js') }}"></script>
 <script src="{{ url('vendor/advanced-file-manager/assets/js/ajax-function.js') }}"></script>
+
+<script src="{{ url('vendor/advanced-file-manager/assets/libs/rixetlightbox/rixetlightbox.js') }}"></script>
+<script src="{{ url('vendor/advanced-file-manager/assets/libs/rixetlightbox/rixetlightbox-init.js') }}"></script>
