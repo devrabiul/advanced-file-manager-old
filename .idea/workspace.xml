@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bb9ced93-813e-4048-99a5-be11fd89cfe7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/files.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/files.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/ajax-function.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/ajax-function.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/files.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/files.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/advanced-file-manager.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/advanced-file-manager.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_files-list-content.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_files-list-content.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_sidebar.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_sidebar.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_storage-info.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_storage-info.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/script.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/script.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/style.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/style.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/AdvancedFileManagerService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/AdvancedFileManagerService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/FileManagerHelperService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/FileManagerHelperService.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +56,10 @@
     &quot;accountId&quot;: &quot;20ea0f11-ede8-43a1-b50b-62993e57161d&quot;
   }
 }</component>
-  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="/opt/homebrew/Cellar/php/8.3.12_1/bin/php">
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="$PROJECT_DIR$/../../../../homebrew/Cellar/php/8.3.12_1/bin/php">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/composer" />
     </include_path>

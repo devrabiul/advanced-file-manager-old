@@ -32,9 +32,9 @@ class S3FileManagerService
         return 's3_config_' . Str::slug(implode('_', $config));
     }
 
-    public static function checkS3DriverCredential()
+    public static function checkS3DriverCredential($key = null)
     {
-        return Cache::remember(self::cacheKeyForS3ClientStatus(), 30 * 24 * 60 * 60, function () {
+        $result = Cache::remember(self::cacheKeyForS3ClientStatus(), 30 * 24 * 60 * 60, function () {
             try {
                 $s3Config = config('advanced-file-manager.disks.s3');
                 $s3Client = new S3Client([
@@ -75,6 +75,11 @@ class S3FileManagerService
                 ];
             }
         });
+
+        if ($key && $key != null) {
+            return $result[$key] ?? 'Not Found';
+        }
+        return $result;
     }
 
     public static function getFileFullPath($disk, $path): array

@@ -57,6 +57,16 @@ class FileManagerHelperService
         FileManagerHelperService::cacheKeys($cacheKeyFolders);
         FileManagerHelperService::cacheKeys($cacheKeyOverview);
 
+        // Check if the theme exists or fallback to a default if needed
+        $theme = self::getFileManagerTheme() ?: 'default';
+
+        if (S3FileManagerService::getStorageDriver() == 's3' && S3FileManagerService::checkS3DriverCredential('status') == false) {
+            return [
+                'html' => view("advanced-file-manager::$theme.partials._driver-error")->render(),
+                'html_files' => '',
+            ];
+        }
+
         $AllFilesInStorage = Cache::remember($cacheKeyAllFiles, 3600, function () {
             return Storage::disk(S3FileManagerService::getStorageDriver())->allFiles();
         });
@@ -86,8 +96,6 @@ class FileManagerHelperService
             'AllFilesOverview' => $AllFilesOverview
         ];
 
-        // Check if the theme exists or fallback to a default if needed
-        $theme = self::getFileManagerTheme() ?: 'default';
         return [
             'html' => view("advanced-file-manager::$theme.partials._content", $dataArray)->render(),
             'html_files' => view("advanced-file-manager::$theme.partials._files-list-content", $dataArray)->render(),
