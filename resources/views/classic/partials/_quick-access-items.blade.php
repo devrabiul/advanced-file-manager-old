@@ -1,3 +1,7 @@
+<?php
+    use Devrabiul\AdvancedFileManager\Services\AdvancedFileManagerService;
+    $quickAccess = AdvancedFileManagerService::getQuickAccessStats();
+?>
 <div class="quick-access-items">
     <div class="quick-access-item item-cursor-pointer" onclick="openFolderByAjax('')">
         <div class="quick-access-content">

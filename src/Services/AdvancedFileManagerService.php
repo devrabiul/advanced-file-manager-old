@@ -29,7 +29,7 @@ class AdvancedFileManagerService
         $perPage = 20;
         $page = request()->get('page', 1);
         $items = $AllFilesInCurrentFolderFiles->slice(($page - 1) * $perPage, $perPage)->values();
-    
+
         return new LengthAwarePaginator($items, count($AllFilesInCurrentFolderFiles), $perPage, $page, [
             'path' => request()->url(),
             'query' => request()->query(),
@@ -95,7 +95,8 @@ class AdvancedFileManagerService
             if ($targetFolder && Storage::exists($targetFolder)) {
                 $GenData['last_modified'] = Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($targetFolder)))->diffForHumans();
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         return $GenData;
     }
@@ -426,7 +427,7 @@ class AdvancedFileManagerService
             if (empty($request['filter']) || $request['filter'] == 'all') {
                 $includeFile = true;
             } else {
-                switch($request['filter']) {
+                switch ($request['filter']) {
                     case 'images':
                         $includeFile = $type === 'image';
                         break;
@@ -495,7 +496,19 @@ class AdvancedFileManagerService
         // Cache key with driver prefix to avoid conflicts
         $cacheKey = S3FileManagerService::getStorageDriver() . '_quick_access_stats';
         FileManagerHelperService::cacheKeys($cacheKey);
-        
+
+        if (S3FileManagerService::getStorageDriver() == 's3' && S3FileManagerService::checkS3DriverCredential('status') == false) {
+            return [
+                'recent' => ['totalFiles' => 0],
+                'favorites' => ['size' => 0],
+                'images' => ['size' => 0],
+                'videos' => ['size' => 0],
+                'music' => ['size' => 0],
+                'documents' => ['size' => 0],
+                'archives' => ['size' => 0],
+            ];
+        }
+
         return Cache::remember($cacheKey, 3600, function () {
             return [
                 'recent' => self::getRecentFiles(),

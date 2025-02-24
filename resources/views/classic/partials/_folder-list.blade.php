@@ -44,7 +44,7 @@
                 <div class="folder-icon folder-icon-back">
                     {{--                <img src="{{ url('vendor/advanced-file-manager/assets/images/return-back.svg') }}" alt="" srcset=""--}}
                     {{--                     class="svg">--}}
-                    <img src="{{ url('vendor/advanced-file-manager/assets/modern/images/modern-return-back.svg') }}" alt="" srcset=""
+                    <img src="{{ url('vendor/advanced-file-manager/assets/classic/images/classic-return-back.svg') }}" alt="" srcset=""
                          class="svg">
                 </div>
                 <div class="folder-title">
@@ -72,7 +72,7 @@
                     @else
                         {{-- <img src="{{ url('vendor/advanced-file-manager/assets/images/folder.svg') }}" alt="" srcset=""
                              class="svg"> --}}
-                        <img src="{{ url('vendor/advanced-file-manager/assets/modern/images/modern-floder.svg') }}" alt="" srcset=""
+                        <img src="{{ url('vendor/advanced-file-manager/assets/classic/images/classic-folder.svg') }}" alt="" srcset=""
                              class="svg">
                     @endif
                 </div>

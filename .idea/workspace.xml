@@ -6,6 +6,26 @@
   <component name="ChangeListManager">
     <list default="true" id="bb9ced93-813e-4048-99a5-be11fd89cfe7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/ajax-function.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/ajax-function.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder-audio.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder-empty.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder-ppt.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder-search.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder-text.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder-video.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder-zip.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/modern/images/modern-floder.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/index.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/index.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_content.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_content.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_driver-error.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_driver-error.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_files-list-content.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_files-list-content.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_folder-list.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_folder-list.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_quick-access-items.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_quick-access-items.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/classic/partials/_sidebar.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/classic/partials/_sidebar.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controllers/FileManagerController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controllers/FileManagerController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FileManagerConfigServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/FileManagerConfigServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/AdvancedFileManagerService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/AdvancedFileManagerService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/FileManagerHelperService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/FileManagerHelperService.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +79,7 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="$PROJECT_DIR$/../../../../homebrew/Cellar/php/8.3.12_1/bin/php">
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="/opt/homebrew/Cellar/php/8.3.12_1/bin/php">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/composer" />
     </include_path>
@@ -110,6 +130,7 @@
       <workItem from="1740056453578" duration="400000" />
       <workItem from="1740193801722" duration="16795000" />
       <workItem from="1740280305136" duration="7076000" />
+      <workItem from="1740369419290" duration="7290000" />
     </task>
     <servers />
   </component>

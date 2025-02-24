@@ -20,10 +20,12 @@
         }
     ?>
     <div class="quick-access-dropdown">
+        <?php
+            $selectedStorageDriver = request('driver') ?? config('advanced-file-manager.filesystem.default_disk');
+        ?>
         <select class="custom-select">
             @foreach($enabledDrivers as $key => $driver)
-                <option value="{{ $driver['driver'] }}"
-                        {{ config('advanced-file-manager.filesystem.default_disk') == $driver['driver'] ? 'selected':''}}>
+                <option value="{{ $driver['driver'] }}" {{ $selectedStorageDriver == $driver['driver'] ? 'selected':''}}>
                     {{ Str::upper($key) }}
                 </option>
             @endforeach

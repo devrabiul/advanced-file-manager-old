@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Artisan;
 
 class FileManagerConfigServiceProvider extends ServiceProvider
 {
@@ -105,6 +106,7 @@ class FileManagerConfigServiceProvider extends ServiceProvider
         // Determine where the script is running from
         if ($scriptPath === $publicPath) {
             $systemProcessingDirectory = 'public';
+            $this->checkAndCreateStorageLink();
         } elseif ($scriptPath === $basePath) {
             $systemProcessingDirectory = 'root';
         } else {
@@ -113,5 +115,12 @@ class FileManagerConfigServiceProvider extends ServiceProvider
 
         // Update the configuration
         config(['advanced-file-manager.system_processing_directory' => $systemProcessingDirectory]);
+    }
+
+    public function checkAndCreateStorageLink(): void
+    {
+        if (!File::exists(public_path('storage'))) {
+            Artisan::call('storage:link');
+        }
     }
 }

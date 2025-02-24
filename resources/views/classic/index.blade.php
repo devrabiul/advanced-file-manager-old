@@ -21,30 +21,29 @@
     FileManagerHelperService::cacheKeys($cacheKeyFolders);
     FileManagerHelperService::cacheKeys($cacheKeyOverview);
 
-    $AllFilesInStorage = Cache::remember($cacheKeyAllFiles, 3600, function () {
-        return Storage::disk(S3FileManagerService::getStorageDriver())->allFiles();
-    });
+    $driverCredentialStatus = true;
+    if (S3FileManagerService::getStorageDriver() == 's3' && S3FileManagerService::checkS3DriverCredential('status') == false) {
+        $driverCredentialStatus = false;
+    }
 
-    $AllFilesInCurrentFolder = Cache::remember($cacheKeyFiles, 3600, function () use ($targetFolder, $requestData) {
-        return AdvancedFileManagerService::getAllFiles(targetFolder: $targetFolder, request: $requestData);
-    });
+    if ($driverCredentialStatus) {
+        $AllFilesInCurrentFolder = Cache::remember($cacheKeyFiles, 3600, function () use ($targetFolder, $requestData) {
+            return AdvancedFileManagerService::getAllFiles(targetFolder: $targetFolder, request: $requestData);
+        });
 
-    $AllFilesInCurrentFolderFiles = AdvancedFileManagerService::getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData);
+        $AllFilesInCurrentFolderFiles = AdvancedFileManagerService::getAllFilesInCurrentFolder($cacheKeyFiles, $targetFolder, $requestData);
 
-    $folderArray = Cache::remember($cacheKeyFolders, 3600, function () use ($targetFolder) {
-        return AdvancedFileManagerService::getAllFolders($targetFolder);
-    });
+        $folderArray = Cache::remember($cacheKeyFolders, 3600, function () use ($targetFolder) {
+            return AdvancedFileManagerService::getAllFolders($targetFolder);
+        });
 
-    $AllFilesOverview = Cache::remember($cacheKeyOverview, 3600, function () use ($AllFilesInCurrentFolder) {
-        return AdvancedFileManagerService::getAllFilesOverview(AllFilesWithInfo: $AllFilesInCurrentFolder);
-    });
+        $AllFilesOverview = Cache::remember($cacheKeyOverview, 3600, function () use ($AllFilesInCurrentFolder) {
+            return AdvancedFileManagerService::getAllFilesOverview(AllFilesWithInfo: $AllFilesInCurrentFolder);
+        });
 
-    $recentFiles = AdvancedFileManagerService::getRecentFiles();
-    $favoriteFiles = AdvancedFileManagerService::getFavoriteFiles();
-    $quickAccess = AdvancedFileManagerService::getQuickAccessStats();
-
-    $lastFolderArray = explode('/', $targetFolder);
-    $lastFolder = count($lastFolderArray) > 1 ? str_replace('/' . end($lastFolderArray), '', $targetFolder) : '';
+        $lastFolderArray = explode('/', $targetFolder);
+        $lastFolder = count($lastFolderArray) > 1 ? str_replace('/' . end($lastFolderArray), '', $targetFolder) : '';
+    }
 ?>
 <div class="file-manager-root-container">
 

@@ -2,7 +2,7 @@
  use Devrabiul\AdvancedFileManager\Services\FileManagerHelperService;
 ?>
 
-@if(count($AllFilesInCurrentFolderFiles) > 0)
+@if(isset($AllFilesInCurrentFolderFiles) && count($AllFilesInCurrentFolderFiles) > 0)
     <div class="file-manager-files-section {{ session('file_list_container_view_mode') ?? 'list-view' }}" id="filesContainer">
         @foreach ($AllFilesInCurrentFolderFiles as $key => $File)
             <div class="file-manager-files-item" data-filename="{{ strtolower($File['short_name']) }}">
@@ -63,6 +63,11 @@
             </div>
         @endforeach
     </div>
+
+    <!-- Pagination Links -->
+    <div class="pagination-wrapper">
+        {{ $AllFilesInCurrentFolderFiles->links() }}
+    </div>
 @else
     <div class="file-manager-empty-state">
         <div class="empty-state-content">
@@ -76,8 +81,3 @@
         </div>
     </div>
 @endif
-
-<!-- Pagination Links -->
-<div class="pagination-wrapper">
-    {{ $AllFilesInCurrentFolderFiles->links() }}
-</div>

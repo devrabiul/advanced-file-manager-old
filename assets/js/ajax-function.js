@@ -31,6 +31,7 @@ function openFolderByAjax(targetFolder, driver) {
     url.searchParams.delete('page');
 
     const contentContainer = document.querySelector('.advanced-file-manager-content');
+    const quickAccessSection = document.querySelector('.quick-access-section');
 
     // Show loader before sending the request
     loaderContainerRender('show');
@@ -45,6 +46,10 @@ function openFolderByAjax(targetFolder, driver) {
         contentContainer.style.display = 'none';
         contentContainer.innerHTML = response.html;
         contentContainer.style.display = 'block';
+
+        quickAccessSection.style.display = 'none';
+        quickAccessSection.innerHTML = response?.quick_access;
+        quickAccessSection.style.display = 'block';
 
         // Update the URL query parameters
         if (targetFolder) {

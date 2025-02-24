@@ -21,6 +21,7 @@ class FileManagerController extends Controller
         }
 
         return response()->json([
+            'quick_access' => $getView['quick_access'],
             'html' => $getView['html'],
             'html_files' => $getView['html_files'],
         ]);

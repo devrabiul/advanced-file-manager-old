@@ -62,6 +62,7 @@ class FileManagerHelperService
 
         if (S3FileManagerService::getStorageDriver() == 's3' && S3FileManagerService::checkS3DriverCredential('status') == false) {
             return [
+                'quick_access' => view("advanced-file-manager::$theme.partials._quick-access-items")->render(),
                 'html' => view("advanced-file-manager::$theme.partials._driver-error")->render(),
                 'html_files' => '',
             ];
@@ -97,6 +98,7 @@ class FileManagerHelperService
         ];
 
         return [
+            'quick_access' => view("advanced-file-manager::$theme.partials._quick-access-items")->render(),
             'html' => view("advanced-file-manager::$theme.partials._content", $dataArray)->render(),
             'html_files' => view("advanced-file-manager::$theme.partials._files-list-content", $dataArray)->render(),
         ];
@@ -179,6 +181,7 @@ class FileManagerHelperService
         // Check if the theme exists or fallback to a default if needed
         $theme = self::getFileManagerTheme() ?: 'default';
         return [
+            'quick_access' => view("advanced-file-manager::$theme.partials._quick-access-items")->render(),
             'html' => view("advanced-file-manager::$theme.partials._content", $dataArray)->render(),
             'html_files' => view("advanced-file-manager::$theme.partials._files-list", $dataArray)->render(),
         ];
