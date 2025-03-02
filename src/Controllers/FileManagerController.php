@@ -29,7 +29,7 @@ class FileManagerController extends Controller
     
     public function syncFileList(Request $request)
     {
-        Artisan::call('cache:clear');
+        FileManagerHelperService::forgotCacheKeys();
         return response()->json(['status' => 'success']);
     }
 

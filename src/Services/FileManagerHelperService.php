@@ -230,6 +230,15 @@ class FileManagerHelperService
         }
     }
     
+    
+    public static function forgotCacheKeys(): void
+    {
+        $cacheKeys = Cache::get('advancedFileManagerCacheKeys', []);
+        foreach ($cacheKeys as $cacheKey) {
+            Cache::forget($cacheKey);
+        }
+    }
+    
     public static function getFileManagerTheme(): string
     {
         if (Str::lower(config('advanced-file-manager.theme')) == 'modern') {

@@ -1,15 +1,15 @@
-(function($, FilePond){
+(function ($, FilePond) {
     'use strict';
 
     // No jQuery No Go
     if (!$ || !FilePond) {
         return;
     }
-    
+
     // Test if FilePond is supported
     if (!FilePond.supported()) {
         // add stub
-        $.fn.filepond = function() {};
+        $.fn.filepond = function () {};
         return;
     }
 
@@ -22,22 +22,22 @@
         return !args.length || typeof args[0] === 'object';
     }
 
-	function isGetter(obj, key) {
-		var descriptor = Object.getOwnPropertyDescriptor(obj, key);
-		return descriptor ? typeof descriptor.get !== 'undefined' : false;
-	}
+    function isGetter(obj, key) {
+        var descriptor = Object.getOwnPropertyDescriptor(obj, key);
+        return descriptor ? typeof descriptor.get !== 'undefined' : false;
+    }
 
-	function isSetter(obj, key) {
-		var descriptor = Object.getOwnPropertyDescriptor(obj, key);
-		return descriptor ? typeof descriptor.set !== 'undefined' : false;
-	}
+    function isSetter(obj, key) {
+        var descriptor = Object.getOwnPropertyDescriptor(obj, key);
+        return descriptor ? typeof descriptor.set !== 'undefined' : false;
+    }
 
-	function isMethod(obj, key) {
-		return typeof obj[key] === 'function';
-	}
+    function isMethod(obj, key) {
+        return typeof obj[key] === 'function';
+    }
 
     // Setup plugin
-    $.fn.filepond = function() {
+    $.fn.filepond = function () {
 
         // get arguments as array
         var args = argsToArray(arguments);
@@ -46,14 +46,14 @@
         var results = [];
 
         // Execute for every item in the list
-        var items = this.each(function() {
+        var items = this.each(function () {
 
             // test if is create call
             if (isFactory(args)) {
                 FilePond.create(this, args[0])
                 return;
             }
-            
+
             // get a reference to the pond instance based on the element
             var pond = FilePond.find(this);
 
@@ -94,7 +94,7 @@
     };
 
     // Static API
-    Object.keys(FilePond).forEach(function(key) {
+    Object.keys(FilePond).forEach(function (key) {
         $.fn.filepond[key] = FilePond[key];
     });
 

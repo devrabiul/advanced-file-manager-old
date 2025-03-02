@@ -65,125 +65,6 @@
     margin-bottom: 20px;
 }
 
-/* FilePond Container */
-.filepond-wrapper {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    min-height: 350px;
-    max-height: calc(85vh - 180px);
-}
-
-/* FilePond Root */
-.filepond--root {
-    margin: 0;
-    height: 100%;
-}
-
-/* FilePond Panel */
-.filepond--panel-root {
-    background-color: #f8f9fa;
-    border: 2px dashed #dee2e6;
-    border-radius: 8px;
-}
-
-/* FilePond Drop Label */
-.filepond--drop-label {
-    color: #666;
-    font-size: 15px;
-}
-
-.filepond--drop-label label {
-    color: #666;
-    font-size: 15px;
-    font-weight: 500;
-}
-
-.filepond--label-action {
-    color: #0d6efd;
-    text-decoration: underline;
-}
-
-/* FilePond List */
-.filepond--list {
-    left: 1em;
-    right: 1em;
-}
-
-/* FilePond Item */
-.filepond--item {
-    margin-bottom: 6px;
-}
-
-.filepond--item-panel {
-    background-color: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-}
-
-/* File Info */
-.filepond--file {
-    color: #333;
-    padding: 0 1em;
-}
-
-.filepond--file-info-main {
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.filepond--file-info-sub {
-    font-size: 12px;
-    color: #666;
-}
-
-/* Progress Bar */
-.filepond--progress-indicator {
-    background: #0d6efd;
-    right: 0.75em;
-}
-
-/* Action Buttons */
-.filepond--file-action-button {
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    margin: 0;
-    opacity: 1;
-}
-
-.filepond--file-action-button:hover {
-    background-color: rgba(0, 0, 0, 0.75);
-}
-
-/* Image Preview */
-.filepond--image-preview-wrapper {
-    border-radius: 4px;
-}
-
-.filepond--image-preview {
-    background: #fff;
-    height: 100px;
-}
-
-/* File Status */
-.filepond--file-status {
-    margin-top: 3px;
-    font-size: 12px;
-}
-
-/* Error States */
-[data-filepond-item-state*='error'] .filepond--item-panel,
-[data-filepond-item-state*='invalid'] .filepond--item-panel {
-    background-color: #fff5f5;
-    border-color: #feb2b2;
-}
-
-/* Processing States */
-[data-filepond-item-state='processing-complete'] .filepond--item-panel {
-    background-color: #f0fff4;
-    border-color: #9ae6b4;
-}
-
 /* Upload Actions */
 .upload-actions {
     padding: 16px 20px;
@@ -235,7 +116,7 @@
 
 /* Scrollbar */
 .filepond-wrapper::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
 }
 
 .filepond-wrapper::-webkit-scrollbar-track {

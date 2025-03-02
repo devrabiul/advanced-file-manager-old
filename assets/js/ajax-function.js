@@ -1,5 +1,9 @@
 document.getElementById('actionSmartFileSync').addEventListener('click', function(event) {
-    const route = this.getAttribute('data-route');
+    reloadSmartFileSyncContent();
+});
+
+function reloadSmartFileSyncContent() {
+    const route = document.querySelector('#actionSmartFileSync').getAttribute('data-route');
 
     fetch(route, {
         method: 'POST'
@@ -14,9 +18,10 @@ document.getElementById('actionSmartFileSync').addEventListener('click', functio
     .catch(error => {
         console.error('Error:', error);
     });
-});
+}
 
-function openFolderByAjax(targetFolder, driver) {
+
+function openFolderByAjax(targetFolder, driver, loader = true) {
     const url = new URL(window.location.href);
     const route = document.querySelector('.file-manager-files-container').getAttribute('data-route');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -33,8 +38,10 @@ function openFolderByAjax(targetFolder, driver) {
     const contentContainer = document.querySelector('.advanced-file-manager-content');
     const quickAccessSection = document.querySelector('.quick-access-section');
 
-    // Show loader before sending the request
-    loaderContainerRender('show');
+    if (loader) {   
+        // Show loader before sending the request
+        loaderContainerRender('show');
+    }
 
     fetch(route, {
         method: 'POST',
@@ -70,7 +77,9 @@ function openFolderByAjax(targetFolder, driver) {
         console.error('Error:', error);
     })
     .finally(() => {
-        loaderContainerRender('hide');
+        if (loader) {   
+            loaderContainerRender('hide');
+        }
     });
 }
 

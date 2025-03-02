@@ -16,6 +16,10 @@
 <link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/css/files.css') }}">
 <link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/css/modal.css') }}">
 <link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/css/pagination.css') }}">
-<link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/filepond/filepond.css') }}">
+
+<link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/filepond/filepond.min.css') }}">
+<link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/filepond/filepond-plugin-image-edit.css') }}">
+<link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/filepond/filepond-plugin-image-preview.css') }}">
+<link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/filepond/filepond-plugin-file-poster.css') }}">
 
 <link rel="stylesheet" href="{{ url('vendor/advanced-file-manager/assets/libs/rixetlightbox/rixetlightbox.css') }}">

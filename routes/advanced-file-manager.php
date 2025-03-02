@@ -3,12 +3,30 @@
 use Illuminate\Support\Facades\Route;
 use Devrabiul\AdvancedFileManager\Controllers\FolderController;
 use Devrabiul\AdvancedFileManager\Controllers\FileManagerController;
+use Devrabiul\AdvancedFileManager\Controllers\FileUploadController;
 
 Route::group(['prefix' => 'advanced-file-manager'], function () {
     Route::controller(FileManagerController::class)->group(function () {
         Route::post('folder-content', 'getFolderContent')->name('advanced-file-manager.folder-content');
         Route::post('smart-file-sync', 'syncFileList')->name('advanced-file-manager.smart-file-sync');
         Route::post('view-style-setup', 'viewStyleSetup')->name('advanced-file-manager.view-style-setup');
+    });
+
+    Route::controller(FileUploadController::class)->group(function () {
+        // File upload route
+        Route::post('upload-files', 'uploadFiles')->name('advanced-file-manager.upload-files');
+        
+        // Revert file (delete file) route
+        Route::delete('upload-revert', 'revertUpload')->name('advanced-file-manager.upload-revert');
+        
+        // File metadata route
+        Route::post('file-metadata', 'getFileMetadata')->name('advanced-file-manager.file-metadata');
+        
+        // Rename file route
+        Route::post('rename-file', 'renameFile')->name('advanced-file-manager.rename-file');
+        
+        // Process image route
+        Route::post('process-image', 'processImage')->name('advanced-file-manager.process-image');
     });
 
     Route::group(['prefix' => 'folders'], function () {
