@@ -20,7 +20,7 @@
         </div>
 
         <div class="file-list-container-view" data-route="{{ route('advanced-file-manager.view-style-setup') }}">
-            <div class="file-list-container-view-style {{ empty(session('file_list_container_view_mode')) || session('file_list_container_view_mode') == 'list-view' ? 'active' : '' }}" 
+            <div class="file-list-container-view-style {{ session('file_list_container_view_mode') == 'list-view' ? 'active' : '' }}" 
             data-style="list-view">
                 <i class="bi bi-view-list"></i>
             </div>

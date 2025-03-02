@@ -71,6 +71,7 @@ function openFolderByAjax(targetFolder, driver, loader = true) {
         }
         window.history.pushState({}, '', url);
 
+        renderFileContentsViewMode();
         reInitGLightbox();
     })
     .catch(error => {
@@ -115,6 +116,7 @@ document.querySelector('.file-manager-root-container').addEventListener('click',
             url.searchParams.set('page', page);
             window.history.pushState({}, '', url);
 
+            renderFileContentsViewMode();
             reInitGLightbox();
         })
         .catch(error => {
@@ -158,6 +160,9 @@ document.querySelector('.file-manager-root-container').addEventListener('click',
         contentContainer.classList.add(viewStyle);
     }
 
+    // Save the selected view style to local storage
+    localStorage.setItem('file_list_container_view_mode', viewStyle);
+
     // Prepare data for the fetch request
     const formData = new FormData();
     formData.append('view_mode', viewStyle);
@@ -182,6 +187,29 @@ document.querySelector('.file-manager-root-container').addEventListener('click',
     });
 });
 
+// On page load, check the local storage and set the view mode
+window.addEventListener('DOMContentLoaded', () => {
+    renderFileContentsViewMode();
+});
+
+function renderFileContentsViewMode() {
+    const savedViewMode = localStorage.getItem('file_list_container_view_mode');
+
+    if (savedViewMode) {
+        // Set the corresponding active class based on the saved view mode
+        const targetStyleElement = document.querySelector(`.file-list-container-view-style[data-style="${savedViewMode}"]`);
+        if (targetStyleElement) {
+            targetStyleElement.classList.add('active');
+        }
+
+        // Update the content container class based on the saved view mode
+        const contentContainer = document.querySelector('.file-manager-files-section');
+        if (contentContainer) {
+            contentContainer.classList.remove('grid-view', 'list-view');
+            contentContainer.classList.add(savedViewMode);
+        }
+    }
+}
 
 document.querySelector('.file-manager-root-container').addEventListener('input', function(event) {
     // Check if the input is from the search field
@@ -224,6 +252,7 @@ document.querySelector('.file-manager-root-container').addEventListener('input',
             // Re-set the search input value to the old one
             searchInput.value = searchTerm;
 
+            renderFileContentsViewMode();
             reInitGLightbox();
         })
         .catch(error => {
@@ -292,6 +321,7 @@ function openFilesByAjax(fileType, driver = 'public') {
         }
         window.history.pushState({}, '', url);
 
+        renderFileContentsViewMode();
         reInitGLightbox();
     })
     .catch(error => {
