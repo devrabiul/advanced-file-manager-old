@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     $('.close-modal, .btn-cancel').click(function () {
-        $('#createModal').css('display', 'none');
+        $('.modal-section-root').css('display', 'none');
         if (filePondInstant) {
             filePondInstant.destroy();
             filePondInstant = null;
@@ -173,6 +173,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 filePondInstant.destroy();
                 filePondInstant = null;
             }
+        }
+    });
+
+    $('.modal-section-root').click(function (e) {
+        if (e.target === this) {
+            $(this).css('display', 'none');
         }
     });
 });

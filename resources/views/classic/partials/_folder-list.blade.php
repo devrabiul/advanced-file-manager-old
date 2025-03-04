@@ -94,19 +94,19 @@
                         <a href="#" onclick="openFolderByAjax('{{ $folder['path'] }}')">
                             <i class="bi bi-folder2-open"></i> Open
                         </a>
-                        <a href="#" onclick="renameFolder('{{ $folder['path'] }}')">
+                        <a href="#" onclick="renameFolder('{{ $folder['encodePath'] }}')">
                             <i class="bi bi-pencil"></i> Rename
                         </a>
-                        <a href="#" onclick="copyFolder('{{ $folder['path'] }}')">
+                        <a href="#" onclick="copyFolder('{{ $folder['encodePath'] }}')">
                             <i class="bi bi-files"></i> Copy
                         </a>
-                        <a href="#" onclick="moveFolder('{{ $folder['path'] }}')">
+                        <a href="#" onclick="moveFolder('{{ $folder['encodePath'] }}')">
                             <i class="bi bi-arrows-move"></i> Move
                         </a>
-                        <a href="#" onclick="getFolderInfo('{{ $folder['path'] }}')" class="info-option">
+                        <a href="#" onclick="getFileInfo('{{ $folder['encodePath'] }}')" class="info-option">
                             <i class="bi bi-info-circle"></i> Get Info
                         </a>
-                        <a href="#" onclick="deleteFolder('{{ $folder['path'] }}')" class="delete-option">
+                        <a href="#" onclick="deleteFolder('{{ $folder['encodePath'] }}')" class="delete-option">
                             <i class="bi bi-trash"></i> Delete
                         </a>
                     </div>

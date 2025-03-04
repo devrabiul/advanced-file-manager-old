@@ -37,25 +37,25 @@
                         <i class="bi bi-three-dots"></i>
                     </button>
                     <div class="files-dropdown-menu">
-                        <a href="#" onclick="openFile('{{ $File['path'] }}')">
+                        <a href="#" onclick="openFile('{{ $File['encodePath'] }}')">
                             <i class="bi bi-eye"></i> Open
                         </a>
-                        <a href="#" onclick="renameFile('{{ $File['path'] }}')">
+                        <a href="#" onclick="renameFile('{{ $File['encodePath'] }}')">
                             <i class="bi bi-pencil"></i> Rename
                         </a>
-                        <a href="#" onclick="copyFile('{{ $File['path'] }}')">
+                        <a href="#" onclick="copyFile('{{ $File['encodePath'] }}')">
                             <i class="bi bi-files"></i> Copy
                         </a>
-                        <a href="#" onclick="moveFile('{{ $File['path'] }}')">
+                        <a href="#" onclick="moveFile('{{ $File['encodePath'] }}')">
                             <i class="bi bi-arrows-move"></i> Move
                         </a>
                         <a href="{{ $File['full_path'] }}" download>
                             <i class="bi bi-download"></i> Download
                         </a>
-                        <a href="#" onclick="getFileInfo('{{ $File['path'] }}')" class="info-option">
+                        <a href="#" onclick="getFileInfo('{{ $File['encodePath'] }}')" class="info-option">
                             <i class="bi bi-info-circle"></i> Get Info
                         </a>
-                        <a href="#" onclick="deleteFile('{{ $File['path'] }}')" class="delete-option">
+                        <a href="#" onclick="deleteFile('{{ $File['encodePath'] }}')" class="delete-option">
                             <i class="bi bi-trash"></i> Delete
                         </a>
                     </div>

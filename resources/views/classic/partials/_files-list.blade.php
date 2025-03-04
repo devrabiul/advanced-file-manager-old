@@ -41,14 +41,3 @@
         <img id="modalImage" src="" alt="">
     </div>
 </div>
-
-<!-- File Info Modal -->
-<div id="fileInfoModal" class="advanced-file-manager-modal">
-    <div class="advanced-file-manager-modal-content">
-        <span class="advanced-file-manager-modal-close">&times;</span>
-        <div class="advanced-file-manager-file-info-content">
-            <h3 id="fileInfoTitle"></h3>
-            <div id="fileInfoDetails"></div>
-        </div>
-    </div>
-</div>

@@ -2,11 +2,16 @@
 
 namespace Devrabiul\AdvancedFileManager\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Crypt;
+use Devrabiul\AdvancedFileManager\Services\AdvancedFileManagerService;
+use Devrabiul\AdvancedFileManager\Services\FileManagerHelperService;
+use Devrabiul\AdvancedFileManager\Services\S3FileManagerService;
 
 class FolderController extends Controller
 {
@@ -205,4 +210,86 @@ class FolderController extends Controller
             'view_mode' => session('file_list_container_view_mode'),
         ]);
     }
+
+    public function getFileInfo(Request $request)
+    {
+        try {
+            $filePath = Crypt::decryptString($request->file_path);
+            $driver = $request->input('driver', 'public');
+
+            // Check if the path exists
+            if (!Storage::disk($driver)->exists($filePath)) {
+                return response()->json(['html' => '<p class="text-danger">File or directory not found.</p>']);
+            }
+
+            // Determine if it's a file or directory
+            $isDirectory = Storage::disk($driver)->directories($filePath) || Storage::disk($driver)->files($filePath);
+
+            if ($isDirectory) {
+                $type = 'directory';
+                $folder = $filePath;
+                $name = explode('/', $folder);
+                $getAllFilesData = AdvancedFileManagerService::getAllFiles($folder);
+
+                // Get all files inside the directory
+                $filesInside = Storage::disk(S3FileManagerService::getStorageDriver())->files($folder);
+
+                // Get last modified timestamp from the latest file inside the folder
+                $latestTimestamp = !empty($filesInside)
+                    ? max(array_map(fn($file) => Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file), $filesInside))
+                    : null; // No files inside
+                $items = [
+                    'directories' => Storage::disk($driver)->directories($filePath),
+                    'files' => Storage::disk($driver)->files($filePath),
+
+                    'name' => end($name),
+                    'path' => $folder,
+                    'encodePath' => Crypt::encryptString($folder),
+                    'lastPath' => str_replace(end($name), '', $folder),
+                    'type' => 'Folder',
+                    'icon' => AdvancedFileManagerService::getIconByExtension(extension: 'folder'),
+                    // 'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($folder)))->diffForHumans(),
+                    'last_modified' => $latestTimestamp
+                        ? Carbon::parse(date('Y-m-d H:i:s', $latestTimestamp))->diffForHumans()
+                        : 'No files found',
+                    'totalFiles' => $getAllFilesData['totalFiles'],
+                    'size' => $getAllFilesData['size'],
+                    'AllFiles' => $getAllFilesData,
+                    'AllFolders' => AdvancedFileManagerService::getAllFolders($folder),
+                ];
+            } else {
+                $file = $filePath;
+                $type = explode('/', Storage::disk(S3FileManagerService::getStorageDriver())->mimeType($file))[0];
+                $name = explode('/', $file);
+                $items = [
+                    'name' => end($name),
+                    'short_name' => FileManagerHelperService::getFileMinifyString(end($name)),
+                    'driver' => S3FileManagerService::getStorageDriver(),
+                    'path' => $file,
+                    'full_path' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file)['path'],
+                    'full_path_info' => S3FileManagerService::getFileFullPath(S3FileManagerService::getStorageDriver(), $file),
+                    'encodePath' => Crypt::encryptString($file),
+                    'type' => $type,
+                    'icon' => AdvancedFileManagerService::getIconByExtension(extension: pathinfo($file, PATHINFO_EXTENSION)),
+                    'size' => FileManagerHelperService::getAdvancedFileFormatSize(Storage::disk(S3FileManagerService::getStorageDriver())->size($file)),
+                    'sizeInInteger' => Storage::disk(S3FileManagerService::getStorageDriver())->size($file),
+                    'extension' => pathinfo($file, PATHINFO_EXTENSION),
+                    'last_modified' => Carbon::parse(date('Y-m-d H:i:s', Storage::disk(S3FileManagerService::getStorageDriver())->lastModified($file)))->diffForHumans()
+                ];
+            }
+
+            // Render the file or directory info view
+            $html = view('advanced-file-manager::classic.partials.file-info', compact('type', 'items'))->render();
+
+            return response()->json(['html' => $html]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'html' => '<p class="text-danger">Error fetching file info.</p>',
+                'error' => $e->getMessage(),
+                'file' => $e->getFile() . ':' . $e->getLine()
+            ]);
+        }
+    }
+
 } 

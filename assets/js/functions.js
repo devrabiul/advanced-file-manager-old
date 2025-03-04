@@ -146,30 +146,30 @@ function moveFolder(path) {
     });
 }
 
-function getFolderInfo(path) {
-    event.preventDefault();
+function getFileInfo(filePath) {
+    const fileInfoModal = document.getElementById('fileInfoModal');
+    const fileInfoModalContent = document.getElementById('file-info-content');
+
+    const url = new URL(window.location.href);
+    const driver = url.searchParams.get('driver') ?? 'public';
 
     $.ajax({
-        url: '/folders/info',
-        type: 'POST',
+        url: fileInfoModalContent.getAttribute('data-route'),
+        type: "POST",
         data: {
-            path: path
+            file_path: filePath,
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            driver: driver,
         },
         beforeSend: function() {
-            $(".advanced-file-manager-loader-container").removeClass('loader-container-hide');
+            fileInfoModalContent.innerHTML = 'Loading...';
+            fileInfoModal.style.display = 'flex';
         },
         success: function(response) {
-            if (response.success) {
-                // Show folder info in a modal
-                $('#folderInfoModal').find('.modal-body').html(response.html);
-                $('#folderInfoModal').modal('show');
-            }
+            fileInfoModalContent.innerHTML = response.html;
         },
-        error: function(xhr) {
-            toastr.error(xhr.responseJSON.message || 'Error getting folder info');
-        },
-        complete: function() {
-            $(".advanced-file-manager-loader-container").addClass('loader-container-hide');
+        error: function() {
+            fileInfoModalContent.innerHTML = "<p class='text-danger'>Failed to fetch file info.</p>";
         }
     });
 }

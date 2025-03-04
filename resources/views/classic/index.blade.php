@@ -112,7 +112,7 @@
     <!-- Main Container | End -->
 
     <!-- Add this before the closing body tag -->
-    <div class="modal-overlay" id="createModal">
+    <div class="modal-overlay modal-section-root" id="createModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h5>Upload Files</h5>
@@ -135,4 +135,5 @@
         </div>
     </div>
 
+    @include('advanced-file-manager::classic.partials._modal-static-container')
 </div>

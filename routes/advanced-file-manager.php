@@ -36,6 +36,11 @@ Route::group(['prefix' => 'advanced-file-manager'], function () {
             Route::post('/move', 'move')->name('advanced-file-manager.folders.move');
             Route::get('/info',  'info')->name('advanced-file-manager.folders.info');
             Route::delete('/delete', 'delete')->name('advanced-file-manager.folders.delete');
+
+            Route::post('/get-file-info', 'getFileInfo')->name('advanced-file-manager.folders.get-file-info');
         });
+        Route::post('/rename-file', [FolderController::class, 'renameFile']);
+        Route::post('/move-file', [FolderController::class, 'moveFile']);
+        Route::post('/delete-file', [FolderController::class, 'deleteFile']);
     });
 });

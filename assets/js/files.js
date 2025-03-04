@@ -32,6 +32,32 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch((error) => console.error("Error loading SVG:", error));
     });
+
+    // Function to open the rename modal
+    function renameFile(filePath) {
+        const modal = document.getElementById('renameModal');
+        const fileNameInput = document.getElementById('renameFileName');
+        fileNameInput.value = filePath.split('/').pop(); // Set the current file name
+        modal.setAttribute('data-file-path', filePath); // Store the file path in the modal
+        modal.style.display = 'block'; // Show the modal
+    }
+
+    // Function to close the modal
+    function closeModal(modal) {
+        modal.style.display = 'none';
+    }
+
+    // Function to reload the file list
+    function reloadFileList() {
+        // Implement the logic to reload the file list
+        openFolderByAjax(currentFolderPath); // Assuming you have a variable for the current folder path
+    }
+
+    // Event listener for closing the modal
+    document.querySelector('.close-modal').addEventListener('click', function () {
+        const modal = document.getElementById('renameModal');
+        closeModal(modal);
+    });
 });
 
 $(document).ready(function() {
