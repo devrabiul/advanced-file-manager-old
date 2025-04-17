@@ -152,3 +152,5 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for det
 ## License
 
 This package is open-sourced software licensed under the [MIT license](LICENSE.md).
+
+Edit the file (e.g., README.md)
