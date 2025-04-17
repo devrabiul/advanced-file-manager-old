@@ -2,54 +2,7 @@
 
 A powerful and flexible file manager package for Laravel applications.
 
-## Features
-
-- 📁 Easy file and folder management
-- 🖼️ Image preview and thumbnail generation
-- 📋 Copy, cut, paste operations
-- 🗑️ Soft delete with trash management
-- 📤 File upload with drag and drop support
-- 📎 Multiple file upload
-- 🔍 Advanced file search and filtering
-- 📱 Responsive design
-- 🔒 File access permissions
-- 💾 Multiple storage disk support
-
-## Installation
-
-First, install the package via Composer:
-
-```bash
-composer require devrabiul/advanced-file-manager
-```
-
-Then publish the package resources by running:
-
-```bash
-php artisan vendor:publish --provider="Devrabiul\AdvancedFileManager\AdvancedFileManagerServiceProvider"
-```
-
-## Configuration
-
-After publishing the assets, you can find the configuration file at `config/advanced-file-manager.php`. Here you can customize:
-
-- Maximum upload file size
-- Allowed file types
-- Storage disk settings
-- Thumbnail settings
-- Access permissions
-- Route prefix
-
 ## Usage
-
-### 1. Basic Setup
-
-Add the following includes to your blade template:
-
-1. Add the styles in your `<head>` section:
-```php
-@include('advanced-file-manager::style')
-```
 
 2. Add the file manager component where you want it to appear:
 ```php
