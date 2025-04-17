@@ -4,15 +4,6 @@ A powerful and flexible file manager package for Laravel applications.
 
 ## Usage
 
-### 1. Basic Setup
-
-Add the following includes to your blade template:
-
-1. Add the styles in your `<head>` section:
-```php
-@include('advanced-file-manager::style')
-```
-
 2. Add the file manager component where you want it to appear:
 ```php
 @include('advanced-file-manager::file-manager')
