@@ -2,19 +2,6 @@
 
 A powerful and flexible file manager package for Laravel applications.
 
-## Features
-
-- 📁 Easy file and folder management
-- 🖼️ Image preview and thumbnail generation
-- 📋 Copy, cut, paste operations
-- 🗑️ Soft delete with trash management
-- 📤 File upload with drag and drop support
-- 📎 Multiple file upload
-- 🔍 Advanced file search and filtering
-- 📱 Responsive design
-- 🔒 File access permissions
-- 💾 Multiple storage disk support
-
 ## Configuration
 
 After publishing the assets, you can find the configuration file at `config/advanced-file-manager.php`. Here you can customize:
