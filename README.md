@@ -15,20 +15,6 @@ A powerful and flexible file manager package for Laravel applications.
 - 🔒 File access permissions
 - 💾 Multiple storage disk support
 
-## Installation
-
-First, install the package via Composer:
-
-```bash
-composer require devrabiul/advanced-file-manager
-```
-
-Then publish the package resources by running:
-
-```bash
-php artisan vendor:publish --provider="Devrabiul\AdvancedFileManager\AdvancedFileManagerServiceProvider"
-```
-
 ## Configuration
 
 After publishing the assets, you can find the configuration file at `config/advanced-file-manager.php`. Here you can customize:
