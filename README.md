@@ -2,17 +2,6 @@
 
 A powerful and flexible file manager package for Laravel applications.
 
-## Configuration
-
-After publishing the assets, you can find the configuration file at `config/advanced-file-manager.php`. Here you can customize:
-
-- Maximum upload file size
-- Allowed file types
-- Storage disk settings
-- Thumbnail settings
-- Access permissions
-- Route prefix
-
 ## Usage
 
 ### 1. Basic Setup
