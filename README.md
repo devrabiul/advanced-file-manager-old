@@ -148,7 +148,3 @@ Common issues and solutions:
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-## License
-
-This package is open-sourced software licensed under the [MIT license](LICENSE.md).
